@@ -181,6 +181,18 @@ header{background:rgba(5,13,27,.68);backdrop-filter:blur(28px) saturate(150%);bo
 @media(prefers-reduced-motion:reduce){body:before,body:after,.bp-brand .logo,.bp-brand .logo:after,.bp-hero,.bp-hero-copy,.bp-hero h2 span{animation:none!important}.bp-nav button:after{display:none}}
 
 
+/* Interactive full-screen photo viewer */
+.bp-photo-viewer{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(2,6,15,.94);backdrop-filter:blur(18px)}
+.bp-photo-viewer.open{display:flex}
+.bp-photo-viewer img{max-width:min(88vw,1500px);max-height:76vh;object-fit:contain;border-radius:18px;box-shadow:0 25px 90px #000b;border:1px solid #ffffff25}
+.bp-photo-viewer-top,.bp-photo-viewer-bottom{position:absolute;left:24px;right:24px;display:flex;align-items:center;justify-content:space-between;gap:14px;color:#f7f8ff}
+.bp-photo-viewer-top{top:18px}.bp-photo-viewer-top strong,.bp-photo-viewer-top small{display:block}.bp-photo-viewer-top small{color:#aebbd0;font-size:12px;margin-top:3px}
+.bp-photo-viewer-bottom{bottom:18px;color:#c8d2e4;font-size:13px}
+.bp-viewer-close,.bp-viewer-arrow{border:1px solid #ffffff35;background:#14213a;color:#fff;border-radius:50%;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 28px #0007}
+.bp-viewer-close{width:44px;height:44px;font-size:20px}.bp-viewer-arrow{position:absolute;top:50%;transform:translateY(-50%);width:54px;height:54px;font-size:38px;line-height:1}
+.bp-viewer-prev{left:22px}.bp-viewer-next{right:22px}
+.bp-photo-viewer .btn.primary{background:linear-gradient(105deg,#ffe18a,#ffbd36 48%,#e8891b);color:#111827;border:1px solid #ffe09a;font-weight:850}
+@media(max-width:650px){.bp-photo-viewer{padding:12px}.bp-photo-viewer img{max-width:94vw;max-height:68vh}.bp-photo-viewer-top,.bp-photo-viewer-bottom{left:12px;right:12px}.bp-viewer-arrow{width:42px;height:42px;font-size:30px}.bp-viewer-prev{left:8px}.bp-viewer-next{right:8px}.bp-photo-viewer-bottom{font-size:11px;flex-wrap:wrap}.bp-photo-viewer-bottom .btn{padding:9px 11px}}
 /* Final reference-match polish */
 .bp-sidebar{width:218px;padding:24px 15px 18px;background:linear-gradient(180deg,rgba(4,12,27,.98),rgba(3,8,18,.99))}
 .bp-shell{grid-template-columns:218px minmax(0,1fr)}
@@ -238,7 +250,7 @@ header{background:rgba(5,13,27,.68);backdrop-filter:blur(28px) saturate(150%);bo
  <div class="photo-studio-head"><div><strong>Campus &amp; food photo library</strong><div class="muted" style="font-size:12px">Explore 1,000 real-life photographic backgrounds: university life, cafés, coffee and food.</div></div><span class="photo-count" id="photoCount">Background 001 / 1,000</span></div>
  <div class="photo-studio-controls">
   <select id="photoCategory" aria-label="Background category"><option value="university,campus,architecture">University &amp; campus</option><option value="university,library,study">Study spaces</option><option value="coffee,cafe,barista">Coffee &amp; cafés</option><option value="food,restaurant,brunch">Food &amp; dining</option><option value="campus,cafe,food">Campus café life</option></select>
-  <button class="btn ghost" id="photoPrev" type="button">Previous</button><button class="btn primary" id="photoNext" type="button">Next photo</button><button class="btn ghost" id="photoRandom" type="button">Surprise me</button>
+  <button class="btn ghost" id="photoPrev" type="button">Previous</button><button class="btn primary" id="photoNext" type="button">Next photo</button><button class="btn ghost" id="photoRandom" type="button">Surprise me</button><button class="btn ghost" id="photoView" type="button">⛶ Open photo viewer</button>
   <label class="muted" for="photoNumber" style="font-size:12px">Go to</label><input class="photo-number" id="photoNumber" type="number" min="1" max="1000" value="1" aria-label="Background number"><button class="btn ghost" id="photoGo" type="button">Go</button>
  </div>
  <div class="bp-gallery-grid" id="bpGalleryGrid" aria-label="Featured background previews">
@@ -252,7 +264,7 @@ header{background:rgba(5,13,27,.68);backdrop-filter:blur(28px) saturate(150%);bo
  <button class="bp-gallery-tile" type="button" data-gallery-index="8" aria-label="Latte art background" style="background-image:url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=420&q=78')"></button>
  <button class="bp-gallery-tile" type="button" data-gallery-index="9" aria-label="Campus walkway background" style="background-image:url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=420&q=78')"></button>
 </div>
-<div class="photo-studio-controls"><div class="photo-preview"/> id="photoPreview" role="img" aria-label="Current campus and food background preview"></div><span class="muted" id="photoStatus" style="font-size:12px">Loading a real-life photo…</span></div>
+<div class="photo-studio-controls"><div class="photo-preview" id="photoPreview" role="img" aria-label="Current campus and food background preview"></div><span class="muted" id="photoStatus" style="font-size:12px">Loading a real-life photo…</span></div>
 </section>
 </div>
 <section class="bp-stats" aria-label="BrewPlan service highlights">
@@ -282,6 +294,7 @@ header{background:rgba(5,13,27,.68);backdrop-filter:blur(28px) saturate(150%);bo
 <p class="footer">BrewPlan · NUST H-12. Menu listings and prices are supplied by participating café staff. Orders are sent to BrewPlan’s shared database; café fulfilment depends on staff onboarding. No online payment is collected.</p>
 </main>
 </div></div>
+<div class="bp-photo-viewer" id="photoViewer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Background photo viewer"><div class="bp-photo-viewer-top"><div><strong id="viewerTitle">BrewPlan photo viewer</strong><small id="viewerCaption">Campus &amp; food photography</small></div><button class="bp-viewer-close" id="viewerClose" type="button" aria-label="Close photo viewer">✕</button></div><button class="bp-viewer-arrow bp-viewer-prev" id="viewerPrev" type="button" aria-label="Previous photo">‹</button><img id="viewerImage" alt="Selected BrewPlan campus or food background"><button class="bp-viewer-arrow bp-viewer-next" id="viewerNext" type="button" aria-label="Next photo">›</button><div class="bp-photo-viewer-bottom"><span id="viewerNumber">Background 001 / 1,000</span><button class="btn primary" id="viewerApply" type="button">✓ Apply as website wallpaper</button></div></div>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.80.0';
 const SUPABASE_URL = 'https://qguewdxozgcdiekjdqiv.supabase.co';
@@ -496,9 +509,30 @@ function setPhotoBackground(index,category,save=true){
  image.onload=()=>{if(token!==photoLoadToken)return;document.documentElement.style.setProperty("--photo-wallpaper",'url("'+url+'")');preview.style.backgroundImage='url("'+url+'")';status.textContent=PHOTO_TAGS[cat]+" · Real-life photo";activePhoto=n;activePhotoCategory=cat;$("photoCount").textContent="Background "+String(n).padStart(3,"0")+" / 1,000";$("photoNumber").value=n;if(save){try{localStorage.setItem("brewplan-photo-index",String(n));localStorage.setItem("brewplan-photo-category",cat);}catch(e){}}};
  image.onerror=()=>{if(token!==photoLoadToken)return;status.textContent="This photo could not load. Try Next photo.";};image.src=url;
 }
+function openPhotoViewer(){
+ const viewer=$("photoViewer");
+ $("viewerTitle").textContent=PHOTO_TAGS[activePhotoCategory]||"BrewPlan photo viewer";
+ $("viewerCaption").textContent="Explore campus, study spaces, cafés and food photography";
+ $("viewerNumber").textContent="Background "+String(activePhoto).padStart(3,"0")+" / 1,000";
+ $("viewerImage").src=photoUrl(activePhoto,activePhotoCategory);
+ viewer.classList.add("open");viewer.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";$("viewerClose").focus();
+}
+function closePhotoViewer(){const viewer=$("photoViewer");viewer.classList.remove("open");viewer.setAttribute("aria-hidden","true");document.body.style.overflow="";}
+function moveViewerPhoto(direction){
+ const next=direction<0?(activePhoto===1?PHOTO_TOTAL:activePhoto-1):(activePhoto===PHOTO_TOTAL?1:activePhoto+1);
+ setPhotoBackground(next,activePhotoCategory);$("viewerImage").src=photoUrl(next,activePhotoCategory);
+ $("viewerNumber").textContent="Background "+String(next).padStart(3,"0")+" / 1,000";
+ $("viewerTitle").textContent=PHOTO_TAGS[activePhotoCategory]||"BrewPlan photo viewer";
+}
 function initPhotoStudio(){
  let n=1,cat="university,campus,architecture";try{n=Number(localStorage.getItem("brewplan-photo-index"))||1;cat=localStorage.getItem("brewplan-photo-category")||cat;}catch(e){}if(!PHOTO_TAGS[cat])cat="university,campus,architecture";
  $("photoCategory").value=cat;document.querySelectorAll("[data-gallery-index]").forEach(tile=>tile.addEventListener("click",()=>{document.querySelectorAll("[data-gallery-index]").forEach(t=>t.classList.toggle("selected",t===tile));setPhotoBackground(Number(tile.dataset.galleryIndex),activePhotoCategory);}));$("photoPrev").addEventListener("click",()=>setPhotoBackground(activePhoto===1?PHOTO_TOTAL:activePhoto-1,activePhotoCategory));$("photoNext").addEventListener("click",()=>setPhotoBackground(activePhoto===PHOTO_TOTAL?1:activePhoto+1,activePhotoCategory));$("photoRandom").addEventListener("click",()=>setPhotoBackground(1+Math.floor(Math.random()*PHOTO_TOTAL),activePhotoCategory));$("photoGo").addEventListener("click",()=>setPhotoBackground($("photoNumber").value,activePhotoCategory));$("photoNumber").addEventListener("keydown",e=>{if(e.key==="Enter")setPhotoBackground($("photoNumber").value,activePhotoCategory);});$("photoCategory").addEventListener("change",()=>setPhotoBackground(activePhoto,$("photoCategory").value));setPhotoBackground(n,cat,false);
+ $("photoView").addEventListener("click",openPhotoViewer);$("viewerClose").addEventListener("click",closePhotoViewer);
+ $("viewerPrev").addEventListener("click",()=>moveViewerPhoto(-1));$("viewerNext").addEventListener("click",()=>moveViewerPhoto(1));
+ $("viewerApply").addEventListener("click",()=>{setPhotoBackground(activePhoto,activePhotoCategory,true);showToast("This photo is now your BrewPlan wallpaper.");});
+ $("photoPreview").addEventListener("click",openPhotoViewer);$("photoPreview").style.cursor="zoom-in";
+ $("photoViewer").addEventListener("click",e=>{if(e.target===$("photoViewer"))closePhotoViewer();});
+ document.addEventListener("keydown",e=>{if(!$("photoViewer").classList.contains("open"))return;if(e.key==="Escape")closePhotoViewer();if(e.key==="ArrowLeft")moveViewerPhoto(-1);if(e.key==="ArrowRight")moveViewerPhoto(1);});
 }
 function applyAppearance(theme,wallpaper){
  const allowedThemes=['classic','midnight','aurora','rose','contrast'],allowedWalls=['minimal','aurora','sunset','night-sky','forest'];
