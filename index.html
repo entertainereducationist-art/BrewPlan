@@ -14,12 +14,13 @@
 <div class="hero"><div><div class="eyebrow">Your campus café companion</div><h2>Good food. Less waiting.</h2><p>Browse café menus, build your pickup order and keep track of it.</p></div><span class="badge">NUST H-12</span></div>
 <section id="authView" class="authbox hide"><div class="panel"><h2 id="authTitle">Welcome back</h2><p class="muted" id="authSubtitle">Sign in to place orders and see your order history.</p><div class="field" id="nameField"><label>Your name</label><input id="authName" autocomplete="name" placeholder="Student name"></div><div class="field"><label>Email address</label><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div><button class="btn primary" id="authSubmit" style="width:100%">Sign in</button><p id="authMessage" aria-live="polite"></p><div class="divider"></div><p class="muted" style="font-size:13px" id="authToggleText">New to BrewPlan? <button class="btn ghost" id="authToggle">Create an account</button></p></div></section>
 <div id="appView">
-<nav class="tabs"><button class="active" data-tab="order">Order food</button><button data-tab="history">My orders</button><button data-tab="staff" id="staffTab" class="hide">Café dashboard</button></nav>
+<nav class="tabs"><button class="active" data-tab="order">Order food</button><button data-tab="recipes">Recipes</button><button data-tab="history">My orders</button><button data-tab="staff" id="staffTab" class="hide">Café dashboard</button></nav>
 <section id="orderTab">
 <div class="panel"><div class="between"><h3>Choose your café</h3><small id="cafeCount">Loading cafés…</small></div><div id="cafes" class="cafes"></div></div>
 <div class="grid" style="margin-top:17px"><div class="panel"><div class="between"><h3 id="menuTitle">Menu</h3><span id="menuCount" class="muted"></span></div><div class="field"><input id="search" placeholder="Search this café’s menu…"></div><div id="menu" class="menu"><div class="empty">Loading menu…</div></div></div>
 <aside class="panel"><h3>Your pickup order</h3><div id="cart"><div class="empty">Your basket is empty.</div></div><div class="field"><label for="pickupName">Name for pickup</label><input id="pickupName" placeholder="Your name"></div><div class="field"><label for="pickupNote">Pickup note (optional)</label><textarea id="pickupNote" rows="2" placeholder="Anything the café should know?"></textarea></div><div class="notice">You’ll pay at the café. Only menu items with café-verified prices can be ordered. Prices shown are set by café staff.</div><button class="btn primary" id="placeOrder" style="width:100%;margin-top:13px">Place order</button><p id="orderMessage" aria-live="polite"></p></aside></div>
 </section>
+<section id="recipesTab" class="hide"><div class="grid"><div class="panel"><h3>Recipe corner</h3><p class="muted">Quick, student-friendly ideas shared with the NUST community.</p><div id="recipesList"><div class="empty">Loading recipes…</div></div></div><div class="panel"><h3>Share a recipe</h3><p class="muted">Your submission stays unpublished until it is reviewed.</p><div class="field"><label>Recipe title</label><input id="recipeTitle" placeholder="e.g. One-pan pasta"></div><div class="field"><label>Short description</label><input id="recipeDescription" placeholder="A quick description"></div><div class="field"><label>Ingredients (one per line)</label><textarea id="recipeIngredients" rows="5" placeholder="Pasta&#10;Tomatoes&#10;Cheese"></textarea></div><div class="field"><label>Instructions (one step per line)</label><textarea id="recipeInstructions" rows="5" placeholder="Boil the pasta&#10;Prepare the sauce"></textarea></div><div class="field"><label>Preparation time (minutes)</label><input id="recipeMinutes" type="number" min="1" max="600" placeholder="20"></div><button class="btn primary" id="submitRecipe">Submit recipe</button><p id="recipeMessage" aria-live="polite"></p></div></div></section>
 <section id="historyTab" class="hide"><div class="panel"><div class="between"><h3>Your order history</h3><button class="btn ghost" id="refreshOrders">Refresh</button></div><div id="historyList"><div class="empty">Sign in to see your orders.</div></div></div></section>
 <section id="staffTabPanel" class="hide"><div class="panel"><h3>Café dashboard</h3><p class="muted">Manage menu listings and update incoming order statuses for cafés assigned to your staff account.</p><div class="field"><label for="staffCafe">Your café</label><select id="staffCafe"></select></div><div id="staffOrders"></div><div class="divider"></div><h4>Add or update menu item</h4><div class="grid"><div><div class="field"><label>Item name</label><input id="itemName" placeholder="e.g. Chicken sandwich"></div><div class="field"><label>Description</label><input id="itemDescription" placeholder="Optional details"></div></div><div><div class="field"><label>Price (PKR)</label><input id="itemPrice" type="number" min="0" step="1" placeholder="Enter current café price"></div><div class="field"><label>Category</label><input id="itemCategory" placeholder="Snacks, drinks…"></div></div></div><label class="row" style="font-size:13px;margin:8px 0"><input id="priceVerified" type="checkbox"> I confirm this price directly with the café</label><button class="btn primary" id="saveMenuItem">Save menu item</button><p id="staffMessage" aria-live="polite"></p><div class="divider"></div><h4>Menu for this café</h4><div id="staffMenu"></div></div></section>
 </div>
@@ -36,8 +37,8 @@ let authMode = 'signin';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = value => value == null ? 'Price not set' : 'PKR ' + Number(value).toLocaleString('en-PK',{maximumFractionDigits:2});
 function message(id, text, kind='') { const el=$(id); el.className=kind; el.textContent=text; }
-function showTab(tab){document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));$('orderTab').classList.toggle('hide',tab!=='order');$('historyTab').classList.toggle('hide',tab!=='history');$('staffTabPanel').classList.toggle('hide',tab!=='staff');}
-document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{showTab(b.dataset.tab);if(b.dataset.tab==='history')loadOrders();if(b.dataset.tab==='staff')loadStaffDashboard();}));
+function showTab(tab){document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));$('orderTab').classList.toggle('hide',tab!=='order');$('recipesTab').classList.toggle('hide',tab!=='recipes');$('historyTab').classList.toggle('hide',tab!=='history');$('staffTabPanel').classList.toggle('hide',tab!=='staff');}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{showTab(b.dataset.tab);if(b.dataset.tab==='history')loadOrders();if(b.dataset.tab==='recipes')loadRecipes();if(b.dataset.tab==='staff')loadStaffDashboard();}));
 async function loadCafes(){
  const {data,error}=await supabase.from('cafes').select('id,name,cafe_code').eq('is_active',true).order('name');
  if(error){$('cafes').innerHTML='<div class="error">Could not load cafés: '+esc(error.message)+'</div>';return;}
@@ -77,6 +78,20 @@ async function placeOrder(){
  $('placeOrder').disabled=false;
  if(error){message('orderMessage',error.message,'error');return;}
  cart={};renderCart();message('orderMessage','Order #'+data.order_number+' placed. Check My orders for status. Pay at the café.','success');
+}
+async function loadRecipes(){
+ const {data,error}=await supabase.from('recipes').select('id,title,description,ingredients,instructions,prep_minutes,is_published,created_by').order('created_at',{ascending:false});
+ if(error){$('recipesList').innerHTML='<div class="error">'+esc(error.message)+'</div>';return;}
+ $('recipesList').innerHTML=(data||[]).map(r=>'<div class="order"><div class="between"><strong>'+esc(r.title)+'</strong><span class="badge">'+(r.is_published?'Community recipe':'Your pending submission')+'</span></div><p class="muted">'+esc(r.description||'')+'</p>'+(r.prep_minutes?'<small>Prep: '+r.prep_minutes+' min</small>':'')+'<p><strong>Ingredients</strong></p><ul>'+((r.ingredients||[]).map(x=>'<li>'+esc(x)+'</li>').join(''))+'</ul><p><strong>Method</strong></p><ol>'+((r.instructions||[]).map(x=>'<li>'+esc(x)+'</li>').join(''))+'</ol></div>').join('')||'<div class="empty">No recipes published yet. Be the first to share one.</div>';
+}
+async function submitRecipe(){
+ if(!user){message('recipeMessage','Please sign in to submit a recipe.','error');openAuth();return;}
+ const title=$('recipeTitle').value.trim(),ingredients=$('recipeIngredients').value.split('\\n').map(x=>x.trim()).filter(Boolean),instructions=$('recipeInstructions').value.split('\\n').map(x=>x.trim()).filter(Boolean),minutes=$('recipeMinutes').value?Number($('recipeMinutes').value):null;
+ if(!title||!ingredients.length||!instructions.length){message('recipeMessage','Add a title, ingredients and instructions.','error');return;}
+ const {error}=await supabase.from('recipes').insert({title,description:$('recipeDescription').value.trim()||null,ingredients,instructions,prep_minutes:minutes,created_by:user.id,is_published:false});
+ if(error){message('recipeMessage',error.message,'error');return;}
+ ['recipeTitle','recipeDescription','recipeIngredients','recipeInstructions','recipeMinutes'].forEach(id=>$(id).value='');
+ message('recipeMessage','Recipe submitted for review.','success');await loadRecipes();
 }
 async function loadOrders(){
  if(!user){$('historyList').innerHTML='<div class="empty">Sign in to view your orders.</div>';return;}
@@ -149,8 +164,8 @@ async function saveMenuItem(){
  $('itemName').value='';$('itemDescription').value='';$('itemCategory').value='';$('itemPrice').value='';$('priceVerified').checked=false;
  message('staffMessage','Menu item saved. It is visible to students if marked available.','success');await loadStaffDashboard();await loadMenu();
 }
-$('search').addEventListener('input',loadMenu);$('placeOrder').addEventListener('click',placeOrder);$('authSubmit').addEventListener('click',submitAuth);$('authButton').addEventListener('click',async()=>{if(user){await supabase.auth.signOut();await refreshSession();}else{authMode='signin';renderAuthMode();openAuth();}});$('refreshOrders').addEventListener('click',loadOrders);$('saveMenuItem').addEventListener('click',saveMenuItem);$('staffCafe').addEventListener('change',loadStaffDashboard);
+$('search').addEventListener('input',loadMenu);$('placeOrder').addEventListener('click',placeOrder);$('authSubmit').addEventListener('click',submitAuth);$('authButton').addEventListener('click',async()=>{if(user){await supabase.auth.signOut();await refreshSession();}else{authMode='signin';renderAuthMode();openAuth();}});$('refreshOrders').addEventListener('click',loadOrders);$('submitRecipe').addEventListener('click',submitRecipe);$('saveMenuItem').addEventListener('click',saveMenuItem);$('staffCafe').addEventListener('change',loadStaffDashboard);
 supabase.auth.onAuthStateChange(()=>{setTimeout(refreshSession,0);});
-renderAuthMode();await loadCafes();await refreshSession();
+renderAuthMode();await loadCafes();await loadRecipes();await refreshSession();
 </script>
 </body></html>
