@@ -12,7 +12,7 @@
 <header><div class="brand"><div class="logo">☕</div><div><h1>BrewPlan</h1><p>NUST H-12 · Campus cafés, made easier</p></div></div><div class="topright"><span id="userLabel" class="muted" style="color:#d5e4da">Browsing as guest</span><button id="authButton" class="btn" style="background:#fff;color:var(--green)">Sign in</button></div></header>
 <main class="wrap">
 <div class="hero"><div><div class="eyebrow">Your campus café companion</div><h2>Good food. Less waiting.</h2><p>Browse café menus, build your pickup order and keep track of it.</p></div><span class="badge">NUST H-12</span></div>
-<section id="authView" class="authbox hide"><div class="panel"><h2 id="authTitle">Welcome back</h2><p class="muted" id="authSubtitle">Sign in to place orders and see your order history.</p><div class="field" id="nameField"><label>Your name</label><input id="authName" autocomplete="name" placeholder="Student name"></div><div class="field"><label>Email address</label><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div><button class="btn primary" id="authSubmit" style="width:100%">Sign in</button><p id="authMessage" aria-live="polite"></p><div class="divider"></div><p class="muted" style="font-size:13px" id="authToggleText">New to BrewPlan? <button class="btn ghost" id="authToggle">Create an account</button></p></div></section>
+<section id="authView" class="authbox hide"><div class="panel"><h2 id="authTitle">Welcome back</h2><p class="muted" id="authSubtitle">Sign in to place orders and see your order history.</p><div class="field" id="nameField"><label>Your name</label><input id="authName" autocomplete="name" placeholder="Student name"></div><div class="field"><label>Email address</label><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div><button class="btn primary" id="authSubmit" style="width:100%">Sign in</button><p id="authMessage" aria-live="polite"></p><div class="divider"></div><p class="muted" style="font-size:13px" id="authToggleText"></p><button class="btn ghost" id="adminLoginChoice" style="width:100%;margin-top:8px">Administrator sign-in</button></div></section>
 <div id="appView">
 <nav class="tabs"><button class="active" data-tab="order">Order food</button><button data-tab="recipes">Recipes</button><button data-tab="history">My orders</button><button data-tab="staff" id="staffTab" class="hide">Café dashboard</button></nav>
 <section id="orderTab">
@@ -23,6 +23,7 @@
 <section id="recipesTab" class="hide"><div class="grid"><div class="panel"><h3>Recipe corner</h3><p class="muted">Quick, student-friendly ideas shared with the NUST community.</p><div id="recipesList"><div class="empty">Loading recipes…</div></div></div><div class="panel"><h3>Share a recipe</h3><p class="muted">Your submission stays unpublished until it is reviewed.</p><div class="field"><label>Recipe title</label><input id="recipeTitle" placeholder="e.g. One-pan pasta"></div><div class="field"><label>Short description</label><input id="recipeDescription" placeholder="A quick description"></div><div class="field"><label>Ingredients (one per line)</label><textarea id="recipeIngredients" rows="5" placeholder="Pasta&#10;Tomatoes&#10;Cheese"></textarea></div><div class="field"><label>Instructions (one step per line)</label><textarea id="recipeInstructions" rows="5" placeholder="Boil the pasta&#10;Prepare the sauce"></textarea></div><div class="field"><label>Preparation time (minutes)</label><input id="recipeMinutes" type="number" min="1" max="600" placeholder="20"></div><button class="btn primary" id="submitRecipe">Submit recipe</button><p id="recipeMessage" aria-live="polite"></p></div></div></section>
 <section id="historyTab" class="hide"><div class="panel"><div class="between"><h3>Your order history</h3><button class="btn ghost" id="refreshOrders">Refresh</button></div><div id="historyList"><div class="empty">Sign in to see your orders.</div></div></div></section>
 <section id="staffTabPanel" class="hide"><div class="panel"><h3>Café dashboard</h3><p class="muted">Manage menu listings and update incoming order statuses for cafés assigned to your staff account.</p><div class="field"><label for="staffCafe">Your café</label><select id="staffCafe"></select></div><div id="staffOrders"></div><div class="divider"></div><h4>Add or update menu item</h4><div class="grid"><div><div class="field"><label>Item name</label><input id="itemName" placeholder="e.g. Chicken sandwich"></div><div class="field"><label>Description</label><input id="itemDescription" placeholder="Optional details"></div></div><div><div class="field"><label>Price (PKR)</label><input id="itemPrice" type="number" min="0" step="1" placeholder="Enter current café price"></div><div class="field"><label>Category</label><input id="itemCategory" placeholder="Snacks, drinks…"></div></div></div><label class="row" style="font-size:13px;margin:8px 0"><input id="priceVerified" type="checkbox"> I confirm this price directly with the café</label><button class="btn primary" id="saveMenuItem">Save menu item</button><p id="staffMessage" aria-live="polite"></p><div class="divider"></div><h4>Menu for this café</h4><div id="staffMenu"></div></div></section>
+<section id="adminTabPanel" class="hide"><div class="grid"><div class="panel"><h3>Account management</h3><p class="muted">Only administrators can change account roles. New signups are always students.</p><div id="adminUsers"><div class="empty">Loading accounts…</div></div></div><div class="panel"><h3>Assign café staff</h3><div class="field"><label>Account</label><select id="adminStaffUser"></select></div><div class="field"><label>Café</label><select id="adminStaffCafe"></select></div><div class="field"><label>Staff permission</label><select id="adminStaffRole"><option value="manager">Manager</option><option value="staff">Staff</option></select></div><button class="btn primary" id="adminAssignStaff">Assign access</button><p id="adminMessage" aria-live="polite"></p><div class="divider"></div><h3>Café visibility</h3><div id="adminCafes"></div></div></div><div class="panel" style="margin-top:17px"><h3>Recipe approvals</h3><p class="muted">Approve community submissions to make them visible to everyone.</p><div id="adminRecipes"></div></div></section>
 </div>
 <p class="footer">BrewPlan · NUST H-12. Menu listings and prices are supplied by participating café staff. Orders are sent to BrewPlan’s shared database; café fulfilment depends on staff onboarding. No online payment is collected.</p>
 </main>
@@ -37,8 +38,8 @@ let authMode = 'signin';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = value => value == null ? 'Price not set' : 'PKR ' + Number(value).toLocaleString('en-PK',{maximumFractionDigits:2});
 function message(id, text, kind='') { const el=$(id); el.className=kind; el.textContent=text; }
-function showTab(tab){document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));$('orderTab').classList.toggle('hide',tab!=='order');$('recipesTab').classList.toggle('hide',tab!=='recipes');$('historyTab').classList.toggle('hide',tab!=='history');$('staffTabPanel').classList.toggle('hide',tab!=='staff');}
-document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{showTab(b.dataset.tab);if(b.dataset.tab==='history')loadOrders();if(b.dataset.tab==='recipes')loadRecipes();if(b.dataset.tab==='staff')loadStaffDashboard();}));
+function showTab(tab){document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));$('orderTab').classList.toggle('hide',tab!=='order');$('recipesTab').classList.toggle('hide',tab!=='recipes');$('historyTab').classList.toggle('hide',tab!=='history');$('staffTabPanel').classList.toggle('hide',tab!=='staff');$('adminTabPanel').classList.toggle('hide',tab!=='admin');}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{showTab(b.dataset.tab);if(b.dataset.tab==='history')loadOrders();if(b.dataset.tab==='recipes')loadRecipes();if(b.dataset.tab==='staff')loadStaffDashboard();if(b.dataset.tab==='admin')loadAdminDashboard();}));
 async function loadCafes(){
  const {data,error}=await supabase.from('cafes').select('id,name,cafe_code').eq('is_active',true).order('name');
  if(error){$('cafes').innerHTML='<div class="error">Could not load cafés: '+esc(error.message)+'</div>';return;}
@@ -102,12 +103,16 @@ async function loadOrders(){
 function openAuth(){ $('authView').classList.remove('hide');$('appView').classList.add('hide'); }
 function closeAuth(){ $('authView').classList.add('hide');$('appView').classList.remove('hide'); }
 function renderAuthMode(){
- $('authTitle').textContent=authMode==='signin'?'Welcome back':'Create your BrewPlan account';
- $('authSubtitle').textContent=authMode==='signin'?'Sign in to place orders and track pickups.':'Use your email to create a student account.';
- $('authSubmit').textContent=authMode==='signin'?'Sign in':'Create account';
- $('nameField').classList.toggle('hide',authMode==='signin');
- $('authToggleText').innerHTML=authMode==='signin'?'New to BrewPlan? ':'Already registered? ';
- const b=document.createElement('button');b.id='authToggle';b.className='btn ghost';b.textContent=authMode==='signin'?'Create an account':'Sign in';b.onclick=()=>{authMode=authMode==='signin'?'signup':'signin';renderAuthMode();message('authMessage','');};$('authToggleText').appendChild(b);
+ $('authTitle').textContent=authMode==='admin'?'Administrator sign-in':(authMode==='signin'?'Student sign-in':'Create your student account');
+ $('authSubtitle').textContent=authMode==='signin'?'Sign in to place orders and track pickups.':(authMode==='signup'?'Use your email to create a student account.':'Sign in with your assigned administrator account.');
+ $('authSubmit').textContent=authMode==='signup'?'Create student account':'Sign in';
+ $('nameField').classList.toggle('hide',authMode!=='signup');
+ $('authToggleText').innerHTML='';
+ $('adminLoginChoice').classList.toggle('hide',authMode==='admin');
+ if(authMode==='signin'||authMode==='signup'){
+  $('authToggleText').append(authMode==='signin'?'New to BrewPlan? ':'Already registered? ');
+  const b=document.createElement('button');b.className='btn ghost';b.textContent=authMode==='signin'?'Create student account':'Student sign-in';b.onclick=()=>{authMode=authMode==='signin'?'signup':'signin';renderAuthMode();message('authMessage','');};$('authToggleText').appendChild(b);
+ } else $('authSubtitle').textContent='Administrator accounts are created by the BrewPlan creator. Sign in with your assigned administrator credentials.';
 }
 async function submitAuth(){
  const email=$('authEmail').value.trim(),password=$('authPassword').value;
@@ -125,6 +130,7 @@ async function refreshSession(){
  const {data}=await supabase.auth.getSession();user=data.session?.user||null;
  if(user){
   const {data:p}=await supabase.from('profiles').select('display_name,role').eq('id',user.id).maybeSingle();profile=p;
+  if(authMode==='admin' && profile?.role!=='admin'){await supabase.auth.signOut();user=null;profile=null;message('authMessage','This account does not have administrator permissions.','error');openAuth();return;}
   $('userLabel').textContent=profile?.display_name||user.email;
   $('authButton').textContent='Sign out';closeAuth();await loadOrders();await loadStaffAccess();
  }else{
@@ -135,9 +141,27 @@ async function loadStaffAccess(){
  if(!user)return;
  const {data,error}=await supabase.from('cafe_staff').select('cafe_id,staff_role,cafes(id,name)').eq('user_id',user.id);
  staffCafes=error?[]:(data||[]);
- $('staffTab').classList.toggle('hide',staffCafes.length===0);
+ $('staffTab').classList.toggle('hide',staffCafes.length===0);$('adminTab').classList.toggle('hide',profile?.role!=='admin');
  $('staffCafe').innerHTML=staffCafes.map(s=>'<option value="'+s.cafe_id+'">'+esc(s.cafes?.name||'Café')+'</option>').join('');
 }
+async function loadAdminDashboard(){
+ if(profile?.role!=='admin'){showTab('order');return;}
+ const [{data:users,error:ue},{data:cafeRows,error:ce},{data:pending,error:re}]=await Promise.all([
+  supabase.from('profiles').select('id,display_name,role').order('created_at',{ascending:false}),
+  supabase.from('cafes').select('id,name,cafe_code,is_active').order('name'),
+  supabase.from('recipes').select('id,title,description,created_at').eq('is_published',false).order('created_at',{ascending:false})
+ ]);
+ if(ue){$('adminUsers').innerHTML='<div class="error">'+esc(ue.message)+'</div>';return;}
+ $('adminUsers').innerHTML=(users||[]).map(u=>'<div class="cartline"><div><strong>'+esc(u.display_name||'Unnamed account')+'</strong><div class="muted">'+esc(u.id.slice(0,8))+' · '+esc(u.role)+'</div></div>'+(u.id===user.id?'<span class="badge">Creator account</span>':'<button class="btn ghost" data-roleuser="'+u.id+'" data-role="'+(u.role==='admin'?'student':'admin')+'">'+(u.role==='admin'?'Make student':'Make admin')+'</button>')+'</div>').join('')||'<div class="empty">No accounts found.</div>';
+ document.querySelectorAll('[data-roleuser]').forEach(b=>b.onclick=async()=>{const {error}=await supabase.rpc('admin_set_profile_role',{p_user_id:b.dataset.roleuser,p_role:b.dataset.role});message('adminMessage',error?error.message:'Account role updated.',error?'error':'success');if(!error)loadAdminDashboard();});
+ $('adminStaffUser').innerHTML=(users||[]).map(u=>'<option value="'+u.id+'">'+esc(u.display_name||'Unnamed')+' · '+esc(u.role)+'</option>').join('');
+ $('adminStaffCafe').innerHTML=(cafeRows||[]).map(x=>'<option value="'+x.id+'">'+esc(x.name)+'</option>').join('');
+ $('adminCafes').innerHTML=(cafeRows||[]).map(x=>'<div class="cartline"><div><strong>'+esc(x.name)+'</strong><div class="muted">'+esc(x.cafe_code)+' · '+(x.is_active?'Visible':'Hidden')+'</div></div><button class="btn ghost" data-cafeactive="'+x.id+'" data-next="'+(!x.is_active)+'">'+(x.is_active?'Hide café':'Show café')+'</button></div>').join('');
+ document.querySelectorAll('[data-cafeactive]').forEach(b=>b.onclick=async()=>{const {error}=await supabase.from('cafes').update({is_active:b.dataset.next==='true'}).eq('id',b.dataset.cafeactive);message('adminMessage',error?error.message:'Café visibility updated.',error?'error':'success');if(!error){await loadAdminDashboard();await loadCafes();}});
+ $('adminRecipes').innerHTML=(pending||[]).map(r=>'<div class="cartline"><div><strong>'+esc(r.title)+'</strong><div class="muted">'+esc(r.description||'Pending review')+'</div></div><button class="btn primary" data-approve="'+r.id+'">Approve</button></div>').join('')||'<div class="empty">No recipes waiting for approval.</div>';
+ document.querySelectorAll('[data-approve]').forEach(b=>b.onclick=async()=>{const {error}=await supabase.from('recipes').update({is_published:true}).eq('id',b.dataset.approve);message('adminMessage',error?error.message:'Recipe published.',error?'error':'success');if(!error)loadAdminDashboard();});
+}
+async function assignStaff(){const {error}=await supabase.rpc('admin_assign_cafe_staff',{p_user_id:$('adminStaffUser').value,p_cafe_id:$('adminStaffCafe').value,p_staff_role:$('adminStaffRole').value});message('adminMessage',error?error.message:'Café staff access assigned.',error?'error':'success');}
 function currentStaffCafe(){return staffCafes.find(s=>s.cafe_id===$('staffCafe').value)||staffCafes[0];}
 async function loadStaffDashboard(){
  const staff=currentStaffCafe();if(!staff){$('staffOrders').innerHTML='<div class="notice">This account is not assigned to a café yet. Ask the BrewPlan administrator to add your staff account.</div>';return;}
@@ -164,7 +188,7 @@ async function saveMenuItem(){
  $('itemName').value='';$('itemDescription').value='';$('itemCategory').value='';$('itemPrice').value='';$('priceVerified').checked=false;
  message('staffMessage','Menu item saved. It is visible to students if marked available.','success');await loadStaffDashboard();await loadMenu();
 }
-$('search').addEventListener('input',loadMenu);$('placeOrder').addEventListener('click',placeOrder);$('authSubmit').addEventListener('click',submitAuth);$('authButton').addEventListener('click',async()=>{if(user){await supabase.auth.signOut();await refreshSession();}else{authMode='signin';renderAuthMode();openAuth();}});$('refreshOrders').addEventListener('click',loadOrders);$('submitRecipe').addEventListener('click',submitRecipe);$('saveMenuItem').addEventListener('click',saveMenuItem);$('staffCafe').addEventListener('change',loadStaffDashboard);
+$('search').addEventListener('input',loadMenu);$('placeOrder').addEventListener('click',placeOrder);$('authSubmit').addEventListener('click',submitAuth);$('authButton').addEventListener('click',async()=>{if(user){await supabase.auth.signOut();await refreshSession();}else{authMode='signin';renderAuthMode();openAuth();}});$('refreshOrders').addEventListener('click',loadOrders);$('submitRecipe').addEventListener('click',submitRecipe);$('saveMenuItem').addEventListener('click',saveMenuItem);$('staffCafe').addEventListener('change',loadStaffDashboard);$('adminLoginChoice').addEventListener('click',()=>{authMode='admin';renderAuthMode();openAuth();});$('adminAssignStaff').addEventListener('click',assignStaff);
 supabase.auth.onAuthStateChange(()=>{setTimeout(refreshSession,0);});
 renderAuthMode();await loadCafes();await loadRecipes();await refreshSession();
 </script>
