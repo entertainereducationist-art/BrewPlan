@@ -501,7 +501,24 @@ supabase.auth.onAuthStateChange(()=>{setTimeout(refreshSession,0);});
 const PHOTO_TOTAL=1000;
 const PHOTO_TAGS={"university,campus,architecture":"University & campus","university,library,study":"Study spaces","coffee,cafe,barista":"Coffee & cafés","food,restaurant,brunch":"Food & dining","campus,cafe,food":"Campus café life"};
 let activePhoto=1,activePhotoCategory="university,campus,architecture",photoLoadToken=0;
-function photoUrl(index,category){const safeIndex=Math.max(1,Math.min(PHOTO_TOTAL,Number(index)||1));return "https://loremflickr.com/1920/1080/"+encodeURIComponent(category)+"?lock="+safeIndex;}
+const PHOTO_LIBRARY=[
+ {id:"1562774053-701939374585",groups:["university,campus,architecture","campus,cafe,food"]},
+ {id:"1497366754035-f200968a6e72",groups:["university,campus,architecture","university,library,study"]},
+ {id:"1564981797816-1043664bf78d",groups:["university,campus,architecture","university,library,study"]},
+ {id:"1445116572660-236099ec97a0",groups:["coffee,cafe,barista","campus,cafe,food"]},
+ {id:"1568901346375-23c9450c58cd",groups:["food,restaurant,brunch","campus,cafe,food"]},
+ {id:"1517248135467-4c7edcad34c4",groups:["food,restaurant,brunch","coffee,cafe,barista"]},
+ {id:"1498243691581-b145c3f54a5a",groups:["university,library,study","university,campus,architecture"]},
+ {id:"1509042239860-f550ce710b93",groups:["coffee,cafe,barista","food,restaurant,brunch"]},
+ {id:"1503676260728-1c00da094a0b",groups:["university,campus,architecture","university,library,study"]}
+];
+function photoUrl(index,category){
+ const safeIndex=Math.max(1,Math.min(PHOTO_TOTAL,Number(index)||1));
+ const matches=PHOTO_LIBRARY.filter(p=>p.groups.includes(category));
+ const library=matches.length?matches:PHOTO_LIBRARY;
+ const item=library[(safeIndex-1)%library.length];
+ return "https://images.unsplash.com/photo-"+item.id+"?auto=format&fit=crop&w=1920&q=88";
+}
 function setPhotoBackground(index,category,save=true){
  const n=Math.max(1,Math.min(PHOTO_TOTAL,Math.floor(Number(index)||1))),cat=PHOTO_TAGS[category]?category:"university,campus,architecture",token=++photoLoadToken,url=photoUrl(n,cat),status=$("photoStatus"),preview=$("photoPreview");
  status.textContent="Loading photo "+String(n).padStart(3,"0")+"…";
@@ -514,13 +531,13 @@ function openPhotoViewer(){
  $("viewerTitle").textContent=PHOTO_TAGS[activePhotoCategory]||"BrewPlan photo viewer";
  $("viewerCaption").textContent="Explore campus, study spaces, cafés and food photography";
  $("viewerNumber").textContent="Background "+String(activePhoto).padStart(3,"0")+" / 1,000";
- $("viewerImage").src=photoUrl(activePhoto,activePhotoCategory);
+ const viewerImg=$("viewerImage");viewerImg.alt=(PHOTO_TAGS[activePhotoCategory]||"BrewPlan")+" background photo "+activePhoto;viewerImg.src=photoUrl(activePhoto,activePhotoCategory);viewerImg.onerror=()=>{viewerImg.onerror=null;viewerImg.src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1920&q=88";};
  viewer.classList.add("open");viewer.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";$("viewerClose").focus();
 }
 function closePhotoViewer(){const viewer=$("photoViewer");viewer.classList.remove("open");viewer.setAttribute("aria-hidden","true");document.body.style.overflow="";}
 function moveViewerPhoto(direction){
  const next=direction<0?(activePhoto===1?PHOTO_TOTAL:activePhoto-1):(activePhoto===PHOTO_TOTAL?1:activePhoto+1);
- setPhotoBackground(next,activePhotoCategory);$("viewerImage").src=photoUrl(next,activePhotoCategory);
+ setPhotoBackground(next,activePhotoCategory);const viewerImg=$("viewerImage");viewerImg.onerror=()=>{viewerImg.onerror=null;viewerImg.src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1920&q=88";};viewerImg.src=photoUrl(next,activePhotoCategory);
  $("viewerNumber").textContent="Background "+String(next).padStart(3,"0")+" / 1,000";
  $("viewerTitle").textContent=PHOTO_TAGS[activePhotoCategory]||"BrewPlan photo viewer";
 }
