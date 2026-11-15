@@ -437,7 +437,7 @@ document.querySelector('[data-bp-action="profile"]').addEventListener('click',()
 document.querySelector('[data-bp-action="help"]').addEventListener('click',()=>showToast('For BrewPlan account or ordering help, contact your campus café administrator.'));
 document.querySelector('[data-bp-action="premium"]').addEventListener('click',()=>showToast('Premium features are not enabled yet.'));
 $('accountAction').addEventListener('click',()=>{if(user){showToast('You are signed in.');}else{openAuth();}});
-$('topSearch').addEventListener('input',e=>{$('search').value=e.target.value;showTab('order');loadMenu();});
+$('topSearch').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();$('search').value=e.target.value;document.querySelectorAll('[data-cafe]').forEach(b=>{b.hidden=!!q&&!b.textContent.toLowerCase().includes(q);});showTab('order');loadMenu();});
 function showToast(t){let n=$('bpToast');if(!n){n=document.createElement('div');n.id='bpToast';n.className='bp-toast';document.body.appendChild(n);}n.textContent=t;n.classList.remove('hide');clearTimeout(window.__bpToastTimer);window.__bpToastTimer=setTimeout(()=>n.classList.add('hide'),3200);}
 await loadCafes();await loadRecipes();await refreshSession();
 </script>
