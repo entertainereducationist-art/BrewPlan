@@ -86,7 +86,7 @@ async function loadRecipes(){
 }
 async function submitRecipe(){
  if(!user){message('recipeMessage','Please sign in to submit a recipe.','error');openAuth();return;}
- const title=$('recipeTitle').value.trim(),ingredients=$('recipeIngredients').value.split('\\n').map(x=>x.trim()).filter(Boolean),instructions=$('recipeInstructions').value.split('\\n').map(x=>x.trim()).filter(Boolean),minutes=$('recipeMinutes').value?Number($('recipeMinutes').value):null;
+ const title=$('recipeTitle').value.trim(),ingredients=$('recipeIngredients').value.split('\n').map(x=>x.trim()).filter(Boolean),instructions=$('recipeInstructions').value.split('\n').map(x=>x.trim()).filter(Boolean),minutes=$('recipeMinutes').value?Number($('recipeMinutes').value):null;
  if(!title||!ingredients.length||!instructions.length){message('recipeMessage','Add a title, ingredients and instructions.','error');return;}
  const {error}=await supabase.from('recipes').insert({title,description:$('recipeDescription').value.trim()||null,ingredients,instructions,prep_minutes:minutes,created_by:user.id,is_published:false});
  if(error){message('recipeMessage',error.message,'error');return;}
