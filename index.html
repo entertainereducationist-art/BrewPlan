@@ -55,12 +55,98 @@ body[data-theme="midnight"]{background-image:linear-gradient(135deg,rgba(8,13,29
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 @media(max-width:600px){.hero{padding:20px;border-radius:17px}.appearance{padding:13px}.theme-choice,.wall-choice{font-size:11px}}
 
+
+/* BrewPlan reference-inspired dark campus dashboard */
+:root{--bp-bg:#050b17;--bp-panel:rgba(13,22,39,.88);--bp-line:rgba(177,198,231,.18);--bp-text:#f5f7ff;--bp-muted:#aab5cc;--bp-gold:#ffbd35;--bp-gold2:#f28a18}
+html{scroll-behavior:smooth}
+body{background:#050b17;color:var(--bp-text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial}
+body[data-theme="classic"],body[data-theme="midnight"],body[data-theme="aurora"],body[data-theme="rose"],body[data-theme="contrast"]{--ink:#f5f7ff;--muted:#aab5cc;--line:rgba(177,198,231,.18);--white:#111c31;--surface:rgba(13,22,39,.9);--green:#101a2d;--green2:#243957;--mint:#17263e;--cream:#050b17}
+body{background-image:radial-gradient(ellipse at 65% -20%,#26345d 0,transparent 45%),linear-gradient(145deg,#07101f,#030711 75%);background-attachment:fixed}
+.bp-shell{min-height:100vh;display:grid;grid-template-columns:220px minmax(0,1fr)}
+.bp-sidebar{position:sticky;top:0;height:100vh;padding:22px 14px 16px;background:linear-gradient(180deg,rgba(5,13,27,.98),rgba(3,8,17,.98));border-right:1px solid var(--bp-line);display:flex;flex-direction:column;gap:18px;z-index:30}
+.bp-brand{display:flex;align-items:center;gap:10px;padding:4px 8px 18px;border-bottom:1px solid var(--bp-line)}
+.bp-brand .logo{width:54px;height:54px;border-radius:17px;background:linear-gradient(145deg,#253b59,#101c30);border:1px solid #ffffff28}
+.bp-brand h1{font-size:24px;letter-spacing:-1px}.bp-brand h1 span{color:var(--bp-gold)}.bp-brand p{font-size:11px;color:#bdc8dc;margin:0}
+.bp-nav{display:grid;gap:7px}.bp-nav button{display:flex;align-items:center;gap:13px;text-align:left;padding:12px 13px;border:1px solid transparent;border-radius:13px;background:transparent;color:#e7edf8;font-size:13px;font-weight:650;transition:.18s}
+.bp-nav button:hover{background:#ffffff0d;border-color:#ffffff16}.bp-nav button.active{background:linear-gradient(110deg,#f5b52d,#a65e12);color:#101525;box-shadow:0 0 0 1px #ffcf61,0 0 22px #f5a62355}
+.bp-nav .nav-icon{width:22px;text-align:center;font-size:19px}
+.bp-side-bottom{margin-top:auto;display:grid;gap:12px}
+.bp-nust-card{padding:15px 10px;border:1px solid var(--bp-line);border-radius:16px;text-align:center;background:linear-gradient(145deg,#14243b,#091321);color:#e7edf8}
+.bp-nust-card strong{display:block;font-family:Georgia,serif;font-size:24px;letter-spacing:2px}.bp-nust-card small{font-size:10px;color:#9eacc3}
+.bp-theme-toggle{border:1px solid var(--bp-line);border-radius:30px;padding:10px 13px;background:#101b2e;color:#f4f6fc;text-align:left}
+.bp-main{min-width:0}
+header{position:sticky;top:0;z-index:25;padding:14px 28px;background:rgba(7,15,29,.78);border-bottom:1px solid var(--bp-line);backdrop-filter:blur(22px);box-shadow:none}
+.bp-topbar{display:flex;align-items:center;gap:18px}.bp-location{color:#e6edf8;font-size:13px;font-weight:750;white-space:nowrap}.bp-location small{display:block;color:#aab6ca;font-weight:500;font-size:11px}
+.bp-search{flex:1;max-width:560px;position:relative}.bp-search input{width:100%;border:1px solid #ffffff20;border-radius:30px;padding:12px 18px 12px 42px;background:#ffffff12;color:#fff;outline:none}.bp-search input::placeholder{color:#c4cede}.bp-search:before{content:"⌕";position:absolute;left:17px;top:4px;font-size:25px;color:#d9e1ef}
+.bp-top-right{margin-left:auto;display:flex;align-items:center;gap:12px}.bp-premium{border:1px solid #dca53e;border-radius:30px;background:#251d14;color:#ffca57;padding:10px 17px;font-weight:800}
+.bp-top-right #userLabel{font-size:12px;color:#d5ddec!important;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bp-top-right #authButton{background:#f8f9fc!important;color:#15233a!important;border-radius:13px;padding:10px 18px}
+.wrap{max-width:1800px;width:100%;margin:0 auto;padding:24px 26px 34px}
+.bp-top-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(330px,.8fr);grid-template-areas:"hero gallery" "appearance gallery";gap:18px;align-items:stretch}
+.bp-hero{grid-area:hero;min-height:475px;border:1px solid #ffffff25;border-radius:23px;overflow:hidden;position:relative;padding:40px 34px;display:flex;align-items:center;background-image:linear-gradient(90deg,rgba(3,9,19,.80),rgba(3,9,19,.35) 58%,rgba(3,9,19,.08)),url("https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1800&q=88");background-size:cover;background-position:center;box-shadow:0 24px 65px #0007}
+.bp-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#03091488,transparent 45%);pointer-events:none}
+.bp-hero-copy{position:relative;z-index:1;max-width:570px}.bp-hero .eyebrow{color:#ffcb64;letter-spacing:2px}.bp-hero h2{font-size:clamp(42px,5vw,76px);line-height:.98;margin:14px 0 16px;letter-spacing:-2.8px;color:#fff}.bp-hero h2 span{color:var(--bp-gold)}.bp-hero p{font-size:19px;color:#e3e9f4;max-width:460px;margin:0 0 25px}.bp-hero .btn{border-radius:40px;background:linear-gradient(100deg,#ffca4c,#f29a1c);color:#121827;padding:14px 24px;font-size:15px;box-shadow:0 8px 24px #f5a62350}
+.bp-hero-tag{display:inline-flex;align-items:center;gap:8px;border:1px solid #ffffff38;border-radius:30px;padding:7px 12px;background:#07132799;color:#fff;font-size:12px;margin-bottom:16px}
+.appearance{grid-area:appearance;display:none;background:var(--bp-panel);border:1px solid var(--bp-line);color:var(--bp-text)}
+.appearance.is-open{display:block}.appearance .theme-choice,.appearance .wall-choice{background:#15243b;color:#eef3fc;border-color:#ffffff20}
+.photo-studio{grid-area:gallery;margin:0;padding:18px;border-radius:22px;background:linear-gradient(155deg,rgba(24,31,54,.94),rgba(7,13,25,.97));border:1px solid #ffffff30;box-shadow:0 22px 55px #0007;color:#f5f7ff;align-self:stretch;min-width:0}
+.photo-studio-head strong{font-size:17px}.photo-studio .muted,.photo-studio .photo-count{color:#aebbd0}
+.photo-studio-controls{gap:7px}.photo-studio select,.photo-studio input{background:#111d32;color:#eef3fc;border-color:#ffffff22}
+.photo-studio .btn{border-radius:11px;background:#1b2941;color:#eaf0fb;border:1px solid #ffffff16}
+.photo-studio .btn.primary{background:linear-gradient(100deg,#ffcb4b,#ee971a);color:#101728;border:0}
+.photo-studio .photo-preview{height:190px;flex-basis:100%;border-radius:14px;background-size:cover;box-shadow:inset 0 0 0 1px #ffffff28}
+.bp-gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.bp-gallery-tile{height:86px;border:1px solid #ffffff25;border-radius:11px;background-size:cover;background-position:center;cursor:pointer;transition:.18s}
+.bp-gallery-tile:hover{transform:translateY(-2px);outline:2px solid var(--bp-gold)}
+.bp-gallery-tile.selected{outline:2px solid var(--bp-gold);box-shadow:0 0 15px #ffbf3d55}
+.bp-gallery-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.bp-gallery-actions button:last-child{grid-column:1/-1}
+.bp-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:18px 0}
+.bp-stat{border:1px solid var(--bp-line);border-radius:17px;padding:15px 17px;background:linear-gradient(145deg,rgba(25,36,57,.94),rgba(9,16,29,.94));display:flex;align-items:center;gap:13px;box-shadow:0 12px 30px #0003}
+.bp-stat-icon{font-size:28px;color:var(--bp-gold)}.bp-stat strong{display:block;font-size:22px;color:#fff}.bp-stat small{color:#b8c3d6;font-size:11px}
+.bp-bottom-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(270px,.62fr);gap:18px;align-items:stretch}
+.bp-food-banner{min-height:180px;border:1px solid #ffffff24;border-radius:21px;overflow:hidden;padding:24px 28px;display:flex;align-items:center;justify-content:flex-end;background-image:linear-gradient(90deg,rgba(4,9,17,.05),rgba(4,9,17,.45) 48%,rgba(4,9,17,.88)),url("https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1400&q=85");background-size:cover;background-position:center;box-shadow:0 18px 45px #0006}
+.bp-food-copy{max-width:52%;text-align:left}.bp-food-copy h3{font-size:clamp(22px,2.3vw,34px);margin:0 0 5px;color:#fff}.bp-food-copy p{margin:0 0 12px;color:#e4e9f3}.bp-food-copy .btn{background:transparent;border:1px solid #f5bd46;color:#ffcf64;border-radius:30px}
+.bp-account{padding:18px;border-radius:20px;border:1px solid #526687;background:linear-gradient(145deg,#0e1b30,#07101e);box-shadow:0 18px 40px #0005;color:#f4f7ff}
+.bp-account .account-online{color:#56d98b;font-size:12px}.bp-account .account-person{display:flex;gap:12px;align-items:center;margin:17px 0}
+.bp-avatar{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#b57c25,#283f61);border:2px solid #ffc34d;font-size:24px}
+.bp-account strong{display:block}.bp-account small{color:#aebbd0}.bp-account .btn{width:100%;border-radius:30px;background:#202c49;color:#fff}
+.tabs{margin:22px 0 16px;border-bottom:1px solid var(--bp-line);padding-bottom:10px}.tabs button{background:#132139;color:#d8e1f0;border:1px solid #ffffff14}.tabs button.active{background:linear-gradient(100deg,#f8c34d,#e8941a);color:#111827}
+.panel{background:rgba(12,21,37,.91);border:1px solid var(--bp-line);color:#f3f6fc;box-shadow:0 16px 40px #0004}
+.panel h3,.panel h4{color:#f5f7ff}.muted,small{color:#aab7ca}.cafe,.item{background:#111e33;color:#edf2fa;border-color:#ffffff1a}.cafe.selected{background:#24364f;border-color:#f3b941}.item .price{color:#ffd16b}
+.field label{color:#cbd5e5}.field input,.field textarea,.field select{background:#0d192c;color:#f2f5fb;border-color:#33445e}.notice{background:#302717;border-color:#705728;color:#f7d995}.empty{border-color:#42516a;color:#aab7ca}
+.footer{color:#8190a8}
+.bp-toast{position:fixed;right:22px;bottom:22px;z-index:100;background:#13223a;color:#fff;border:1px solid #526783;border-radius:12px;padding:12px 16px;box-shadow:0 12px 35px #0008}
+@media(max-width:1100px){.bp-shell{grid-template-columns:78px minmax(0,1fr)}.bp-sidebar{padding:16px 9px}.bp-brand{justify-content:center;padding:4px 0 15px}.bp-brand>div:last-child,.bp-nav .nav-label,.bp-nust-card,.bp-theme-toggle span{display:none}.bp-nav button{justify-content:center;padding:13px 5px}.bp-nav .nav-icon{font-size:21px}.bp-top-grid{grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr)}.wrap{padding:18px}.bp-hero{min-height:400px;padding:28px}.bp-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.bp-shell{display:block}.bp-sidebar{position:fixed;top:auto;bottom:0;left:0;right:0;width:100%;height:auto;padding:7px 8px;background:#07101eF5;border-right:0;border-top:1px solid var(--bp-line)}.bp-brand,.bp-side-bottom{display:none}.bp-nav{display:flex;justify-content:space-around;gap:2px}.bp-nav button{flex:1;display:flex;flex-direction:column;gap:2px;padding:7px 3px;font-size:9px}.bp-nav .nav-label{display:block;font-size:9px}.bp-nav .nav-icon{font-size:18px}.bp-main{padding-bottom:65px}header{padding:10px 13px}.bp-topbar{gap:8px;flex-wrap:wrap}.bp-location{font-size:11px}.bp-search{order:3;flex-basis:100%;max-width:none}.bp-top-right{gap:6px}.bp-premium{display:none}.bp-top-right #userLabel{max-width:100px}.wrap{padding:14px}.bp-top-grid{display:flex;flex-direction:column}.bp-hero{min-height:390px;padding:26px 22px;background-position:center}.bp-hero h2{font-size:45px}.photo-studio{order:2}.bp-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.bp-stat{padding:11px;gap:8px}.bp-stat strong{font-size:18px}.bp-bottom-grid{grid-template-columns:1fr}.bp-food-banner{min-height:160px;padding:18px}.bp-food-copy{max-width:72%}.bp-gallery-tile{height:75px}.grid{grid-template-columns:1fr}.appearance.is-open{display:block}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bp-nav button,.bp-gallery-tile{transition:none}}
+
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="logo" aria-label="BrewPlan logo"><svg viewBox="0 0 64 64" role="img" aria-hidden="true"><defs><linearGradient id="bpCup" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe5a3"/><stop offset="1" stop-color="#d69a35"/></linearGradient></defs><path d="M13 23h33v16a13 13 0 0 1-13 13h-7a13 13 0 0 1-13-13V23Z" fill="url(#bpCup)" stroke="#fff4d9" stroke-width="2"/><path d="M46 27h4a8 8 0 0 1 0 16h-6" fill="none" stroke="#ffe5a3" stroke-width="5" stroke-linecap="round"/><path d="M23 16c-4-6 5-8 2-14M35 17c-4-6 5-8 2-14" fill="none" stroke="#fff0c5" stroke-width="3" stroke-linecap="round"/><path d="M8 56c12-5 30-5 46 0" fill="none" stroke="#e5b95f" stroke-width="3" stroke-linecap="round"/></svg></div><div><h1>BrewPlan</h1><p>NUST H-12 · Campus cafés, made easier</p></div></div><div class="topright"><span id="userLabel" class="muted" style="color:#d5e4da">Browsing as guest</span><button id="authButton" class="btn" style="background:#fff;color:var(--green)">Sign in</button></div></header>
+<div class="bp-shell">
+<aside class="bp-sidebar">
+ <div class="bp-brand"><div class="logo" aria-hidden="true">☕</div><div><h1>Brew<span>Plan</span></h1><p>Sip · Order · Enjoy</p></div></div>
+ <nav class="bp-nav" aria-label="Main navigation">
+  <button class="active" type="button" data-bp-tab="order" data-scroll="top"><span class="nav-icon">⌂</span><span class="nav-label">Home</span></button>
+  <button type="button" data-bp-tab="order" data-scroll="cafes"><span class="nav-icon">☕</span><span class="nav-label">Browse Cafés</span></button>
+  <button type="button" data-bp-tab="order" data-scroll="menu"><span class="nav-icon">🛒</span><span class="nav-label">Order Now</span></button>
+  <button type="button" data-bp-tab="history"><span class="nav-icon">▤</span><span class="nav-label">My Orders</span></button>
+  <button type="button" data-bp-tab="recipes"><span class="nav-icon">♡</span><span class="nav-label">Recipes</span></button>
+  <button type="button" data-bp-action="profile"><span class="nav-icon">♙</span><span class="nav-label">Profile</span></button>
+  <button type="button" data-bp-action="settings"><span class="nav-icon">⚙</span><span class="nav-label">Settings</span></button>
+  <button type="button" data-bp-action="help"><span class="nav-icon">ⓘ</span><span class="nav-label">Help &amp; Support</span></button>
+  <button type="button" class="hide" id="bpStaffNav" data-bp-tab="staff"><span class="nav-icon">▣</span><span class="nav-label">Café dashboard</span></button>
+  <button type="button" class="hide" id="bpAdminNav" data-bp-tab="admin"><span class="nav-icon">♛</span><span class="nav-label">Administrator</span></button>
+ </nav>
+ <div class="bp-side-bottom"><div class="bp-nust-card"><strong>NUST</strong><small>Dream. Learn. Grow.</small></div><button class="bp-theme-toggle" id="bpThemeToggle" type="button">◐ <span>Theme &amp; Wallpapers</span></button></div>
+</aside>
+<div class="bp-main">
+<header><div class="bp-topbar"><div class="bp-location">⌖ NUST H-12<small>Campus cafés, made easier</small></div><div class="bp-search"><input id="topSearch" placeholder="Search cafés, menu items…" aria-label="Search cafés and menu items"></div><div class="bp-top-right"><button class="bp-premium" type="button" data-bp-action="premium">♛ Premium</button><span id="userLabel" class="muted">Browsing as guest</span><button id="authButton" class="btn">Sign in</button></div></div></header>
 <main class="wrap">
-<div class="hero"><div><div class="eyebrow">Your campus café companion</div><h2>Good food. Less waiting.</h2><p>Browse café menus, build your pickup order and keep track of it.</p></div><span class="badge">NUST H-12</span></div>
+<div class="logo" aria-label="BrewPlan logo"><svg viewBox="0 0 64 64" role="img" aria-hidden="true"><defs><linearGradient id="bpCup" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe5a3"/><stop offset="1" stop-color="#d69a35"/></linearGradient></defs><path d="M13 23h33v16a13 13 0 0 1-13 13h-7a13 13 0 0 1-13-13V23Z" fill="url(#bpCup)" stroke="#fff4d9" stroke-width="2"/><path d="M46 27h4a8 8 0 0 1 0 16h-6" fill="none" stroke="#ffe5a3" stroke-width="5" stroke-linecap="round"/><path d="M23 16c-4-6 5-8 2-14M35 17c-4-6 5-8 2-14" fill="none" stroke="#fff0c5" stroke-width="3" stroke-linecap="round"/><path d="M8 56c12-5 30-5 46 0" fill="none" stroke="#e5b95f" stroke-width="3" stroke-linecap="round"/></svg></div><div><h1>BrewPlan</h1><p>NUST H-12 · Campus cafés, made easier</p></div></div><div class="topright"><span id="userLabel" class="muted" style="color:#d5e4da">Browsing as guest</span><button id="authButton" class="btn" style="background:#fff;color:var(--green)">Sign in</button></div></header>
+<main class="wrap">
+<div class="bp-top-grid">
+<section class="bp-hero"><div class="bp-hero-copy"><div class="bp-hero-tag">⌖ NUST H-12 · Islamabad</div><div class="eyebrow">Campus cafés, made easier</div><h2>Welcome to<br><span>BrewPlan</span></h2><p>Your ultimate campus café companion at NUST H-12.</p><button class="btn primary" type="button" data-bp-tab="order" data-scroll="cafes">☕ Explore Cafés&nbsp; →</button></div></section>
 <section class="appearance" aria-label="Personalise BrewPlan"><div class="appearance-head"><div><strong>Make BrewPlan yours</strong><div class="muted" style="font-size:12px">Choose a visual theme and a campus-inspired wallpaper.</div></div><button class="btn ghost" id="resetAppearance" type="button">Reset</button></div><div class="appearance-label">App themes</div><div class="theme-options" id="themeOptions"><button type="button" class="theme-choice" data-theme-choice="classic" aria-pressed="true"><i class="theme-dot" style="--dot:#205c47"></i>Campus Green</button><button type="button" class="theme-choice" data-theme-choice="midnight" aria-pressed="false"><i class="theme-dot" style="--dot:#8b7cf6"></i>Midnight</button><button type="button" class="theme-choice" data-theme-choice="aurora" aria-pressed="false"><i class="theme-dot" style="--dot:#39a6a0"></i>Aurora</button><button type="button" class="theme-choice" data-theme-choice="rose" aria-pressed="false"><i class="theme-dot" style="--dot:#d58aaa"></i>Rose</button><button type="button" class="theme-choice" data-theme-choice="contrast" aria-pressed="false"><i class="theme-dot" style="--dot:#b07b14"></i>High Contrast</button></div><div class="appearance-label">Wallpapers</div><div class="wallpaper-options" id="wallpaperOptions"><button type="button" class="wall-choice" data-wallpaper-choice="minimal" style="--swatch:linear-gradient(135deg,#f7f7f3,#dce5e0)">Minimal</button><button type="button" class="wall-choice" data-wallpaper-choice="aurora" style="--swatch:linear-gradient(135deg,#9be1d5,#a78bfa)">Aurora</button><button type="button" class="wall-choice" data-wallpaper-choice="sunset" style="--swatch:linear-gradient(135deg,#ffc18c,#df91b7)">Sunset</button><button type="button" class="wall-choice" data-wallpaper-choice="night-sky" style="--swatch:linear-gradient(135deg,#17244e,#7269b4);--swatch-ink:#fff">Night Sky</button><button type="button" class="wall-choice" data-wallpaper-choice="forest" style="--swatch:linear-gradient(135deg,#a7c9a4,#e2d0a2)">Forest</button></div></section>
 <section class="photo-studio" aria-label="Real-life campus and food photo backgrounds">
  <div class="photo-studio-head"><div><strong>Campus &amp; food photo library</strong><div class="muted" style="font-size:12px">Explore 1,000 real-life photographic backgrounds: university life, cafés, coffee and food.</div></div><span class="photo-count" id="photoCount">Background 001 / 1,000</span></div>
@@ -70,6 +156,17 @@ body[data-theme="midnight"]{background-image:linear-gradient(135deg,rgba(8,13,29
   <label class="muted" for="photoNumber" style="font-size:12px">Go to</label><input class="photo-number" id="photoNumber" type="number" min="1" max="1000" value="1" aria-label="Background number"><button class="btn ghost" id="photoGo" type="button">Go</button>
  </div>
  <div class="photo-studio-controls"><div class="photo-preview" id="photoPreview" role="img" aria-label="Current campus and food background preview"></div><span class="muted" id="photoStatus" style="font-size:12px">Loading a real-life photo…</span></div>
+</section>
+</div>
+<section class="bp-stats" aria-label="BrewPlan service highlights">
+ <div class="bp-stat"><span class="bp-stat-icon">▣</span><div><strong id="statCafeCount">—</strong><small>Active cafés</small></div></div>
+ <div class="bp-stat"><span class="bp-stat-icon">♜</span><div><strong id="statMenuCount">—</strong><small>Items in selected café</small></div></div>
+ <div class="bp-stat"><span class="bp-stat-icon">⚡</span><div><strong>Pickup</strong><small>Order ahead on campus</small></div></div>
+ <div class="bp-stat"><span class="bp-stat-icon">★</span><div><strong>Pay at café</strong><small>No online payment</small></div></div>
+</section>
+<section class="bp-bottom-grid">
+ <div class="bp-food-banner"><div class="bp-food-copy"><h3>Good Food. Great Vibes.</h3><p>Discover campus favourites at NUST.</p><button class="btn" type="button" data-bp-tab="order" data-scroll="menu">Order Now&nbsp; →</button></div></div>
+ <aside class="bp-account"><div class="between"><strong>♙ Your Account</strong><span class="account-online" id="accountOnline">● Guest</span></div><div class="account-person"><div class="bp-avatar">☕</div><div><strong id="accountName">Browsing as guest</strong><small id="accountId">Sign in to access your account</small><div><span class="badge" id="accountRole">Guest</span></div></div></div><button class="btn" type="button" id="accountAction">Sign in / Create account&nbsp; →</button></aside>
 </section>
 <section id="authView" class="authbox hide"><div class="panel"><h2 id="authTitle">Welcome back</h2><p class="muted" id="authSubtitle">Sign in to place orders and see your order history.</p><div class="field" id="nameField"><label>Full name</label><input id="authName" autocomplete="name" placeholder="Your full name"></div><div id="studentDetails" class="hide"><div class="field"><label>Department</label><input id="authDepartment" placeholder="e.g. Computer Science"></div><div class="field"><label>School / College</label><input id="authSchool" placeholder="e.g. SEECS"></div><div class="field"><label>Registration number</label><input id="authReg" placeholder="Your NUST registration number"></div><div class="field"><label>Batch / Year</label><input id="authBatch" placeholder="e.g. 2026"></div><div class="field"><label>Phone (optional)</label><input id="authPhone" type="tel" autocomplete="tel" placeholder="+92…"></div></div><div class="field"><label>Real email address</label><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div><div class="field" id="passwordField"><label>Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Your password"></div><div id="accountCredentials" class="success hide" aria-live="polite"></div><button class="btn primary" id="authSubmit" style="width:100%">Sign in</button><p id="authMessage" aria-live="polite"></p><div class="divider"></div><p class="muted" style="font-size:13px" id="authToggleText"></p><button class="btn ghost" id="adminLoginChoice" style="width:100%;margin-top:8px">Administrator sign-in</button>
 <button class="btn ghost" id="founderSetupChoice" style="width:100%;margin-top:8px">First-time founder setup</button></div></section>
@@ -87,6 +184,7 @@ body[data-theme="midnight"]{background-image:linear-gradient(135deg,rgba(8,13,29
 </div>
 <p class="footer">BrewPlan · NUST H-12. Menu listings and prices are supplied by participating café staff. Orders are sent to BrewPlan’s shared database; café fulfilment depends on staff onboarding. No online payment is collected.</p>
 </main>
+</div></div>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.80.0';
 const SUPABASE_URL = 'https://qguewdxozgcdiekjdqiv.supabase.co';
@@ -104,7 +202,7 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()
 async function loadCafes(){
  const {data,error}=await supabase.from('cafes').select('id,name,cafe_code').eq('is_active',true).order('name');
  if(error){$('cafes').innerHTML='<div class="error">Could not load cafés: '+esc(error.message)+'</div>';return;}
- cafes=data||[];$('cafeCount').textContent=cafes.length+' cafés';
+ cafes=data||[];$('cafeCount').textContent=cafes.length+' cafés';if($('statCafeCount'))$('statCafeCount').textContent=String(cafes.length);
  if(!selectedCafe||!cafes.some(c=>c.id===selectedCafe.id))selectedCafe=cafes[0]||null;
  renderCafes();await loadMenu();
 }
@@ -117,7 +215,7 @@ async function loadMenu(){
  $('menuTitle').textContent=selectedCafe.name+' menu';
  const {data,error}=await supabase.from('menu_items').select('id,name,description,category,price,price_verified,is_available').eq('cafe_id',selectedCafe.id).eq('is_available',true).order('name');
  if(error){$('menu').innerHTML='<div class="error">'+esc(error.message)+'</div>';return;}
- const q=$('search').value.toLowerCase();const items=(data||[]).filter(i=>(i.name+' '+(i.description||'')+' '+(i.category||'')).toLowerCase().includes(q));
+ if($('statMenuCount'))$('statMenuCount').textContent=String((data||[]).length);const q=$('search').value.toLowerCase();const items=(data||[]).filter(i=>(i.name+' '+(i.description||'')+' '+(i.category||'')).toLowerCase().includes(q));
  $('menuCount').textContent=items.length+' items';
  $('menu').innerHTML=items.map(i=>'<div class="item"><div><strong>'+esc(i.name)+'</strong><div class="desc">'+esc(i.description||i.category||'')+'</div></div><div class="between"><span class="price">'+(i.price_verified&&i.price!=null?money(i.price):'<span class="muted">Price awaiting verification</span>')+'</span></div><button class="btn" data-add="'+i.id+'" '+(!(i.price_verified&&i.price!=null)?'disabled':'')+'>Add to order</button></div>').join('')||'<div class="empty">No verified menu items yet. Café staff can add the current menu and prices.</div>';
  document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const item=items.find(i=>i.id===b.dataset.add);if(item){cart[item.id]={...item,quantity:(cart[item.id]?.quantity||0)+1};renderCart();}});
@@ -229,10 +327,10 @@ async function refreshSession(){
  if(user){
   const {data:p}=await supabase.from('profiles').select('display_name,role,department,school,registration_number,batch,phone,brewplan_email').eq('id',user.id).maybeSingle();profile=p;
   if((authMode==='admin' && profile?.role!=='admin') || (authMode!=='admin' && profile?.role==='admin')){await supabase.auth.signOut();user=null;profile=null;message('authMessage',authMode==='admin'?'This account does not have administrator permissions.':'This is an administrator account. Please use Administrator sign-in.','error');openAuth();return;}
-  $('userLabel').textContent=(profile?.display_name||user.email)+(profile?.brewplan_email?' · '+profile.brewplan_email:'');
+  $('userLabel').textContent=(profile?.display_name||user.email)+(profile?.brewplan_email?' · '+profile.brewplan_email:'');$('accountName').textContent=profile?.display_name||user.email;$('accountId').textContent=profile?.brewplan_email||user.email;$('accountRole').textContent=profile?.role==='admin'?'Administrator':profile?.role==='student'?'Student':'Account';$('accountOnline').textContent='● Online';$('accountAction').textContent='View account details →';$('bpStaffNav').classList.toggle('hide',staffCafes.length===0);$('bpAdminNav').classList.toggle('hide',profile?.role!=='admin');
   $('authButton').textContent='Sign out';closeAuth();await loadOrders();await loadStaffAccess();
  }else{
-  profile=null;staffCafes=[];$('userLabel').textContent='Browsing as guest';$('authButton').textContent='Sign in';$('staffTab').classList.add('hide');$('adminTab').classList.add('hide');if($('authView').classList.contains('hide'))closeAuth();else $('appView').classList.add('hide');
+  profile=null;staffCafes=[];$('userLabel').textContent='Browsing as guest';$('accountName').textContent='Browsing as guest';$('accountId').textContent='Sign in to access your account';$('accountRole').textContent='Guest';$('accountOnline').textContent='● Guest';$('accountAction').textContent='Sign in / Create account →';$('bpStaffNav').classList.add('hide');$('bpAdminNav').classList.add('hide');$('authButton').textContent='Sign in';$('staffTab').classList.add('hide');$('adminTab').classList.add('hide');if($('authView').classList.contains('hide'))closeAuth();else $('appView').classList.add('hide');
  }
 }
 async function loadStaffAccess(){
@@ -323,6 +421,16 @@ function initAppearance(){
 
 initAppearance();
 initPhotoStudio();
-renderAuthMode();await loadCafes();await loadRecipes();await refreshSession();
+renderAuthMode();
+document.querySelectorAll('[data-bp-tab]').forEach(b=>b.addEventListener('click',()=>{const tab=b.dataset.bpTab;showTab(tab);document.querySelectorAll('[data-bp-tab]').forEach(x=>x.classList.toggle('active',x===b));if(tab==='history')loadOrders();if(tab==='recipes')loadRecipes();if(tab==='staff')loadStaffDashboard();if(tab==='admin')loadAdminDashboard();const target=b.dataset.scroll;if(target){const el=target==='top'?document.querySelector('.bp-hero'):target==='cafes'?$('cafes'):target==='menu'?$('menu'):null;if(el)el.scrollIntoView({behavior:'smooth',block:'center'});}}));
+$('bpThemeToggle').addEventListener('click',()=>{$('themeOptions').closest('.appearance').classList.toggle('is-open');$('themeOptions').closest('.appearance').scrollIntoView({behavior:'smooth',block:'center'});});
+document.querySelector('[data-bp-action="settings"]').addEventListener('click',()=>{$('themeOptions').closest('.appearance').classList.toggle('is-open');$('themeOptions').closest('.appearance').scrollIntoView({behavior:'smooth',block:'center'});});
+document.querySelector('[data-bp-action="profile"]').addEventListener('click',()=>{if(user){$('accountName').scrollIntoView({behavior:'smooth',block:'center'});}else{openAuth();}});
+document.querySelector('[data-bp-action="help"]').addEventListener('click',()=>showToast('For BrewPlan account or ordering help, contact your campus café administrator.'));
+document.querySelector('[data-bp-action="premium"]').addEventListener('click',()=>showToast('Premium features are not enabled yet.'));
+$('accountAction').addEventListener('click',()=>{if(user){showToast('You are signed in.');}else{openAuth();}});
+$('topSearch').addEventListener('input',e=>{$('search').value=e.target.value;showTab('order');loadMenu();});
+function showToast(t){let n=$('bpToast');if(!n){n=document.createElement('div');n.id='bpToast';n.className='bp-toast';document.body.appendChild(n);}n.textContent=t;n.classList.remove('hide');clearTimeout(window.__bpToastTimer);window.__bpToastTimer=setTimeout(()=>n.classList.add('hide'),3200);}
+await loadCafes();await loadRecipes();await refreshSession();
 </script>
 </body></html>
