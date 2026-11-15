@@ -155,7 +155,15 @@ header{position:sticky;top:0;z-index:25;padding:14px 28px;background:rgba(7,15,2
   <button class="btn ghost" id="photoPrev" type="button">Previous</button><button class="btn primary" id="photoNext" type="button">Next photo</button><button class="btn ghost" id="photoRandom" type="button">Surprise me</button>
   <label class="muted" for="photoNumber" style="font-size:12px">Go to</label><input class="photo-number" id="photoNumber" type="number" min="1" max="1000" value="1" aria-label="Background number"><button class="btn ghost" id="photoGo" type="button">Go</button>
  </div>
- <div class="photo-studio-controls"><div class="photo-preview" id="photoPreview" role="img" aria-label="Current campus and food background preview"></div><span class="muted" id="photoStatus" style="font-size:12px">Loading a real-life photo…</span></div>
+ <div class="bp-gallery-grid" id="bpGalleryGrid" aria-label="Featured background previews">
+ <button class="bp-gallery-tile selected" type="button" data-gallery-index="1" aria-label="University campus background" style="background-image:url('https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=420&q=78')"></button>
+ <button class="bp-gallery-tile" type="button" data-gallery-index="201" aria-label="Study space background" style="background-image:url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=420&q=78')"></button>
+ <button class="bp-gallery-tile" type="button" data-gallery-index="401" aria-label="Coffee shop background" style="background-image:url('https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=420&q=78')"></button>
+ <button class="bp-gallery-tile" type="button" data-gallery-index="601" aria-label="Food and dining background" style="background-image:url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=420&q=78')"></button>
+ <button class="bp-gallery-tile" type="button" data-gallery-index="801" aria-label="Campus café life background" style="background-image:url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=420&q=78')"></button>
+ <button class="bp-gallery-tile" type="button" data-gallery-index="1000" aria-label="Evening campus background" style="background-image:url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=420&q=78')"></button>
+</div>
+<div class="photo-studio-controls"><div class="photo-preview" id="photoPreview" role="img" aria-label="Current campus and food background preview"></div><span class="muted" id="photoStatus" style="font-size:12px">Loading a real-life photo…</span></div>
 </section>
 </div>
 <section class="bp-stats" aria-label="BrewPlan service highlights">
@@ -327,7 +335,7 @@ async function refreshSession(){
  if(user){
   const {data:p}=await supabase.from('profiles').select('display_name,role,department,school,registration_number,batch,phone,brewplan_email').eq('id',user.id).maybeSingle();profile=p;
   if((authMode==='admin' && profile?.role!=='admin') || (authMode!=='admin' && profile?.role==='admin')){await supabase.auth.signOut();user=null;profile=null;message('authMessage',authMode==='admin'?'This account does not have administrator permissions.':'This is an administrator account. Please use Administrator sign-in.','error');openAuth();return;}
-  $('userLabel').textContent=(profile?.display_name||user.email)+(profile?.brewplan_email?' · '+profile.brewplan_email:'');$('accountName').textContent=profile?.display_name||user.email;$('accountId').textContent=profile?.brewplan_email||user.email;$('accountRole').textContent=profile?.role==='admin'?'Administrator':profile?.role==='student'?'Student':'Account';$('accountOnline').textContent='● Online';$('accountAction').textContent='View account details →';$('bpStaffNav').classList.toggle('hide',staffCafes.length===0);$('bpAdminNav').classList.toggle('hide',profile?.role!=='admin');
+  $('userLabel').textContent=(profile?.display_name||user.email)+(profile?.brewplan_email?' · '+profile.brewplan_email:'');$('accountName').textContent=profile?.display_name||user.email;$('accountId').textContent=profile?.brewplan_email||user.email;$('accountRole').textContent=profile?.role==='admin'?'Administrator':profile?.role==='student'?'Student':'Account';$('bpAdminNav').classList.toggle('hide',profile?.role!=='admin');$('accountOnline').textContent='● Online';$('accountAction').textContent='View account details →';$('bpStaffNav').classList.toggle('hide',staffCafes.length===0);$('bpAdminNav').classList.toggle('hide',profile?.role!=='admin');
   $('authButton').textContent='Sign out';closeAuth();await loadOrders();await loadStaffAccess();
  }else{
   profile=null;staffCafes=[];$('userLabel').textContent='Browsing as guest';$('accountName').textContent='Browsing as guest';$('accountId').textContent='Sign in to access your account';$('accountRole').textContent='Guest';$('accountOnline').textContent='● Guest';$('accountAction').textContent='Sign in / Create account →';$('bpStaffNav').classList.add('hide');$('bpAdminNav').classList.add('hide');$('authButton').textContent='Sign in';$('staffTab').classList.add('hide');$('adminTab').classList.add('hide');if($('authView').classList.contains('hide'))closeAuth();else $('appView').classList.add('hide');
@@ -336,7 +344,7 @@ async function refreshSession(){
 async function loadStaffAccess(){
  if(!user)return;
  const {data,error}=await supabase.from('cafe_staff').select('cafe_id,staff_role,cafes(id,name)').eq('user_id',user.id);
- staffCafes=error?[]:(data||[]);
+ staffCafes=error?[]:(data||[]);$('bpStaffNav').classList.toggle('hide',staffCafes.length===0);$('bpAdminNav').classList.toggle('hide',profile?.role!=='admin');
  $('staffTab').classList.toggle('hide',staffCafes.length===0);$('adminTab').classList.toggle('hide',profile?.role!=='admin');
  $('staffCafe').innerHTML=staffCafes.map(s=>'<option value="'+s.cafe_id+'">'+esc(s.cafes?.name||'Café')+'</option>').join('');
 }
@@ -400,7 +408,7 @@ function setPhotoBackground(index,category,save=true){
 }
 function initPhotoStudio(){
  let n=1,cat="university,campus,architecture";try{n=Number(localStorage.getItem("brewplan-photo-index"))||1;cat=localStorage.getItem("brewplan-photo-category")||cat;}catch(e){}if(!PHOTO_TAGS[cat])cat="university,campus,architecture";
- $("photoCategory").value=cat;$("photoPrev").addEventListener("click",()=>setPhotoBackground(activePhoto===1?PHOTO_TOTAL:activePhoto-1,activePhotoCategory));$("photoNext").addEventListener("click",()=>setPhotoBackground(activePhoto===PHOTO_TOTAL?1:activePhoto+1,activePhotoCategory));$("photoRandom").addEventListener("click",()=>setPhotoBackground(1+Math.floor(Math.random()*PHOTO_TOTAL),activePhotoCategory));$("photoGo").addEventListener("click",()=>setPhotoBackground($("photoNumber").value,activePhotoCategory));$("photoNumber").addEventListener("keydown",e=>{if(e.key==="Enter")setPhotoBackground($("photoNumber").value,activePhotoCategory);});$("photoCategory").addEventListener("change",()=>setPhotoBackground(activePhoto,$("photoCategory").value));setPhotoBackground(n,cat,false);
+ $("photoCategory").value=cat;document.querySelectorAll("[data-gallery-index]").forEach(tile=>tile.addEventListener("click",()=>{document.querySelectorAll("[data-gallery-index]").forEach(t=>t.classList.toggle("selected",t===tile));setPhotoBackground(Number(tile.dataset.galleryIndex),activePhotoCategory);}));$("photoPrev").addEventListener("click",()=>setPhotoBackground(activePhoto===1?PHOTO_TOTAL:activePhoto-1,activePhotoCategory));$("photoNext").addEventListener("click",()=>setPhotoBackground(activePhoto===PHOTO_TOTAL?1:activePhoto+1,activePhotoCategory));$("photoRandom").addEventListener("click",()=>setPhotoBackground(1+Math.floor(Math.random()*PHOTO_TOTAL),activePhotoCategory));$("photoGo").addEventListener("click",()=>setPhotoBackground($("photoNumber").value,activePhotoCategory));$("photoNumber").addEventListener("keydown",e=>{if(e.key==="Enter")setPhotoBackground($("photoNumber").value,activePhotoCategory);});$("photoCategory").addEventListener("change",()=>setPhotoBackground(activePhoto,$("photoCategory").value));setPhotoBackground(n,cat,false);
 }
 function applyAppearance(theme,wallpaper){
  const allowedThemes=['classic','midnight','aurora','rose','contrast'],allowedWalls=['minimal','aurora','sunset','night-sky','forest'];
