@@ -14,7 +14,7 @@
 <div class="hero"><div><div class="eyebrow">Your campus café companion</div><h2>Good food. Less waiting.</h2><p>Browse café menus, build your pickup order and keep track of it.</p></div><span class="badge">NUST H-12</span></div>
 <section id="authView" class="authbox hide"><div class="panel"><h2 id="authTitle">Welcome back</h2><p class="muted" id="authSubtitle">Sign in to place orders and see your order history.</p><div class="field" id="nameField"><label>Your name</label><input id="authName" autocomplete="name" placeholder="Student name"></div><div class="field"><label>Email address</label><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div><button class="btn primary" id="authSubmit" style="width:100%">Sign in</button><p id="authMessage" aria-live="polite"></p><div class="divider"></div><p class="muted" style="font-size:13px" id="authToggleText"></p><button class="btn ghost" id="adminLoginChoice" style="width:100%;margin-top:8px">Administrator sign-in</button></div></section>
 <div id="appView">
-<nav class="tabs"><button class="active" data-tab="order">Order food</button><button data-tab="recipes">Recipes</button><button data-tab="history">My orders</button><button data-tab="staff" id="staffTab" class="hide">Café dashboard</button></nav>
+<nav class="tabs"><button class="active" data-tab="order">Order food</button><button data-tab="recipes">Recipes</button><button data-tab="history">My orders</button><button data-tab="staff" id="staffTab" class="hide">Café dashboard</button><button data-tab="admin" id="adminTab" class="hide">Administrator</button></nav>
 <section id="orderTab">
 <div class="panel"><div class="between"><h3>Choose your café</h3><small id="cafeCount">Loading cafés…</small></div><div id="cafes" class="cafes"></div></div>
 <div class="grid" style="margin-top:17px"><div class="panel"><div class="between"><h3 id="menuTitle">Menu</h3><span id="menuCount" class="muted"></span></div><div class="field"><input id="search" placeholder="Search this café’s menu…"></div><div id="menu" class="menu"><div class="empty">Loading menu…</div></div></div>
@@ -130,7 +130,7 @@ async function refreshSession(){
  const {data}=await supabase.auth.getSession();user=data.session?.user||null;
  if(user){
   const {data:p}=await supabase.from('profiles').select('display_name,role').eq('id',user.id).maybeSingle();profile=p;
-  if(authMode==='admin' && profile?.role!=='admin'){await supabase.auth.signOut();user=null;profile=null;message('authMessage','This account does not have administrator permissions.','error');openAuth();return;}
+  if((authMode==='admin' && profile?.role!=='admin') || (authMode!=='admin' && profile?.role==='admin')){await supabase.auth.signOut();user=null;profile=null;message('authMessage',authMode==='admin'?'This account does not have administrator permissions.':'This is an administrator account. Please use Administrator sign-in.','error');openAuth();return;}
   $('userLabel').textContent=profile?.display_name||user.email;
   $('authButton').textContent='Sign out';closeAuth();await loadOrders();await loadStaffAccess();
  }else{
