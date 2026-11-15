@@ -1,0 +1,46 @@
+{
+  "packageId": "com.brewplan.nust",
+  "host": "brewplan.vercel.app",
+  "name": "BrewPlan — NUST H-12",
+  "launcherName": "BrewPlan",
+  "display": "standalone",
+  "themeColor": "#081326",
+  "themeColorDark": "#081326",
+  "navigationColor": "#081326",
+  "navigationColorDark": "#081326",
+  "navigationDividerColor": "#081326",
+  "navigationDividerColorDark": "#081326",
+  "backgroundColor": "#07101f",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://brewplan.vercel.app/icon.svg",
+  "maskableIconUrl": "https://brewplan.vercel.app/icon.svg",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "android"
+  },
+  "appVersionCode": 1,
+  "appVersion": "1.0.0",
+  "shortcuts": [
+    {
+      "name": "Browse Cafés",
+      "shortName": "Cafés",
+      "url": "/"
+    },
+    {
+      "name": "Order Now",
+      "shortName": "Order",
+      "url": "/"
+    }
+  ],
+  "generatorApp": "bubblewrap",
+  "webManifestUrl": "https://brewplan.vercel.app/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "isChromeOSOnly": false,
+  "minSdkVersion": 23,
+  "orientation": "any",
+  "fingerprints": [],
+  "additionalTrustedOrigins": []
+}
