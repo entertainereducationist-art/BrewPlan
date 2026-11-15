@@ -50,7 +50,7 @@ body[data-wallpaper="minimal"]{--wallpaper:linear-gradient(135deg,#ffffff66,tran
 <main class="wrap">
 <div class="hero"><div><div class="eyebrow">Your campus café companion</div><h2>Good food. Less waiting.</h2><p>Browse café menus, build your pickup order and keep track of it.</p></div><span class="badge">NUST H-12</span></div>
 <section class="appearance" aria-label="Personalise BrewPlan"><div class="appearance-head"><div><strong>Make BrewPlan yours</strong><div class="muted" style="font-size:12px">Choose a visual theme and a campus-inspired wallpaper.</div></div><button class="btn ghost" id="resetAppearance" type="button">Reset</button></div><div class="appearance-label">App themes</div><div class="theme-options" id="themeOptions"><button type="button" class="theme-choice" data-theme-choice="classic" aria-pressed="true"><i class="theme-dot" style="--dot:#205c47"></i>Campus Green</button><button type="button" class="theme-choice" data-theme-choice="midnight" aria-pressed="false"><i class="theme-dot" style="--dot:#8b7cf6"></i>Midnight</button><button type="button" class="theme-choice" data-theme-choice="aurora" aria-pressed="false"><i class="theme-dot" style="--dot:#39a6a0"></i>Aurora</button><button type="button" class="theme-choice" data-theme-choice="rose" aria-pressed="false"><i class="theme-dot" style="--dot:#d58aaa"></i>Rose</button><button type="button" class="theme-choice" data-theme-choice="contrast" aria-pressed="false"><i class="theme-dot" style="--dot:#b07b14"></i>High Contrast</button></div><div class="appearance-label">Wallpapers</div><div class="wallpaper-options" id="wallpaperOptions"><button type="button" class="wall-choice" data-wallpaper-choice="minimal" style="--swatch:linear-gradient(135deg,#f7f7f3,#dce5e0)">Minimal</button><button type="button" class="wall-choice" data-wallpaper-choice="aurora" style="--swatch:linear-gradient(135deg,#9be1d5,#a78bfa)">Aurora</button><button type="button" class="wall-choice" data-wallpaper-choice="sunset" style="--swatch:linear-gradient(135deg,#ffc18c,#df91b7)">Sunset</button><button type="button" class="wall-choice" data-wallpaper-choice="night-sky" style="--swatch:linear-gradient(135deg,#17244e,#7269b4);--swatch-ink:#fff">Night Sky</button><button type="button" class="wall-choice" data-wallpaper-choice="forest" style="--swatch:linear-gradient(135deg,#a7c9a4,#e2d0a2)">Forest</button></div></section>
-<section id="authView" class="authbox hide"><div class="panel"><h2 id="authTitle">Welcome back</h2><p class="muted" id="authSubtitle">Sign in to place orders and see your order history.</p><div class="field" id="nameField"><label>Your name</label><input id="authName" autocomplete="name" placeholder="Student name"></div><div class="field"><label>Email address</label><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div><button class="btn primary" id="authSubmit" style="width:100%">Sign in</button><p id="authMessage" aria-live="polite"></p><div class="divider"></div><p class="muted" style="font-size:13px" id="authToggleText"></p><button class="btn ghost" id="adminLoginChoice" style="width:100%;margin-top:8px">Administrator sign-in</button></div></section>
+<section id="authView" class="authbox hide"><div class="panel"><h2 id="authTitle">Welcome back</h2><p class="muted" id="authSubtitle">Sign in to place orders and see your order history.</p><div class="field" id="nameField"><label>Full name</label><input id="authName" autocomplete="name" placeholder="Your full name"></div><div id="studentDetails" class="hide"><div class="field"><label>Department</label><input id="authDepartment" placeholder="e.g. Computer Science"></div><div class="field"><label>School / College</label><input id="authSchool" placeholder="e.g. SEECS"></div><div class="field"><label>Registration number</label><input id="authReg" placeholder="Your NUST registration number"></div><div class="field"><label>Batch / Year</label><input id="authBatch" placeholder="e.g. 2026"></div><div class="field"><label>Phone (optional)</label><input id="authPhone" type="tel" autocomplete="tel" placeholder="+92…"></div></div><div class="field"><label>Real email address</label><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div><div class="field" id="passwordField"><label>Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Your password"></div><div id="accountCredentials" class="success hide" aria-live="polite"></div><button class="btn primary" id="authSubmit" style="width:100%">Sign in</button><p id="authMessage" aria-live="polite"></p><div class="divider"></div><p class="muted" style="font-size:13px" id="authToggleText"></p><button class="btn ghost" id="adminLoginChoice" style="width:100%;margin-top:8px">Administrator sign-in</button></div></section>
 <div id="appView">
 <nav class="tabs"><button class="active" data-tab="order">Order food</button><button data-tab="recipes">Recipes</button><button data-tab="history">My orders</button><button data-tab="staff" id="staffTab" class="hide">Café dashboard</button><button data-tab="admin" id="adminTab" class="hide">Administrator</button></nav>
 <section id="orderTab">
@@ -73,6 +73,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = id => document.getElementById(id);
 let user = null, profile = null, cafes = [], selectedCafe = null, cart = {}, staffCafes = [];
 let authMode = 'signin';
+const FOUNDER_EMAIL = 'hassanirfan586775@gmail.com';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = value => value == null ? 'Price not set' : 'PKR ' + Number(value).toLocaleString('en-PK',{maximumFractionDigits:2});
 function message(id, text, kind='') { const el=$(id); el.className=kind; el.textContent=text; }
@@ -142,9 +143,15 @@ function openAuth(){ $('authView').classList.remove('hide');$('appView').classLi
 function closeAuth(){ $('authView').classList.add('hide');$('appView').classList.remove('hide'); }
 function renderAuthMode(){
  $('authTitle').textContent=authMode==='admin'?'Administrator sign-in':(authMode==='signin'?'Student sign-in':'Create your student account');
- $('authSubtitle').textContent=authMode==='signin'?'Sign in to place orders and track pickups.':(authMode==='signup'?'Use your email to create a student account.':'Sign in with your assigned administrator account.');
+ $('authSubtitle').textContent=authMode==='signin'?'Sign in with your registered email and password.':(authMode==='signup'?'Create your student profile. BrewPlan will generate your student ID and a strong password.':'Sign in with the founder administrator account.');
  $('authSubmit').textContent=authMode==='signup'?'Create student account':'Sign in';
  $('nameField').classList.toggle('hide',authMode!=='signup');
+ $('studentDetails').classList.toggle('hide',authMode!=='signup');
+ $('passwordField').classList.toggle('hide',authMode==='signup');
+ $('accountCredentials').classList.add('hide');
+ $('authEmail').readOnly=authMode==='admin';
+ if(authMode==='admin')$('authEmail').value=FOUNDER_EMAIL;
+
  $('authToggleText').innerHTML='';
  $('adminLoginChoice').classList.toggle('hide',authMode==='admin');
  if(authMode==='signin'||authMode==='signup'){
@@ -152,24 +159,51 @@ function renderAuthMode(){
   const b=document.createElement('button');b.className='btn ghost';b.textContent=authMode==='signin'?'Create student account':'Student sign-in';b.onclick=()=>{authMode=authMode==='signin'?'signup':'signin';renderAuthMode();message('authMessage','');};$('authToggleText').appendChild(b);
  } else $('authSubtitle').textContent='Administrator accounts are created by the BrewPlan creator. Sign in with your assigned administrator credentials.';
 }
+function makePassword(){
+ const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*';
+ const bytes=new Uint8Array(22);crypto.getRandomValues(bytes);
+ return Array.from(bytes,b=>alphabet[b%alphabet.length]).join('');
+}
+function makeStudentAlias(){
+ const bytes=new Uint32Array(1);crypto.getRandomValues(bytes);
+ return 'student'+String(bytes[0]%100000000).padStart(8,'0')+'@brewplan.local';
+}
 async function submitAuth(){
- const email=$('authEmail').value.trim(),password=$('authPassword').value;
- if(!email||!password){message('authMessage','Enter your email and password.','error');return;}
+ const email=$('authEmail').value.trim().toLowerCase();
+ let password=$('authPassword').value;
+ if(!email){message('authMessage','Enter your real email address.','error');return;}
+ if(authMode==='signup'){
+  const name=$('authName').value.trim(),department=$('authDepartment').value.trim(),school=$('authSchool').value.trim(),reg=$('authReg').value.trim(),batch=$('authBatch').value.trim();
+  if(!name||!department||!school||!reg||!batch){message('authMessage','Complete your name, department, school, registration number and batch.','error');return;}
+  if(!email.includes('@')){message('authMessage','Enter a valid email address.','error');return;}
+  password=makePassword();
+  $('authPassword').value=password;
+ }else if(!password){message('authMessage','Enter your password.','error');return;}
  $('authSubmit').disabled=true;message('authMessage','Please wait…');
  let result;
- if(authMode==='signup')result=await supabase.auth.signUp({email,password,options:{data:{full_name:$('authName').value.trim()}}});
- else result=await supabase.auth.signInWithPassword({email,password});
+ if(authMode==='signup'){
+  const alias=makeStudentAlias();
+  result=await supabase.auth.signUp({email,password,options:{data:{
+   full_name:$('authName').value.trim(),department:$('authDepartment').value.trim(),
+   school:$('authSchool').value.trim(),registration_number:$('authReg').value.trim(),
+   batch:$('authBatch').value.trim(),phone:$('authPhone').value.trim(),brewplan_email:alias
+  }}});
+  if(!result.error){
+   $('accountCredentials').classList.remove('hide');
+   $('accountCredentials').innerHTML='<strong>Your BrewPlan account details</strong><br>Student ID: <b>'+esc(alias)+'</b><br>Generated password: <b>'+esc(password)+'</b><br><small>Save this password now. Use your real email to sign in and recover your account. This BrewPlan ID is an internal identifier, not an email inbox.</small>';
+  }
+ }else result=await supabase.auth.signInWithPassword({email,password});
  $('authSubmit').disabled=false;
  if(result.error){message('authMessage',result.error.message,'error');return;}
- if(authMode==='signup'&&!result.data.session){message('authMessage','Account created. Check your email to confirm it, then sign in.','success');return;}
+ if(authMode==='signup'&&!result.data.session){message('authMessage','Account created. Check your real email inbox to confirm the account. Save the generated password shown above. Email verification remains required for account security.','success');return;}
  message('authMessage','Signed in.','success');await refreshSession();
 }
 async function refreshSession(){
  const {data}=await supabase.auth.getSession();user=data.session?.user||null;
  if(user){
-  const {data:p}=await supabase.from('profiles').select('display_name,role').eq('id',user.id).maybeSingle();profile=p;
+  const {data:p}=await supabase.from('profiles').select('display_name,role,department,school,registration_number,batch,phone,brewplan_email').eq('id',user.id).maybeSingle();profile=p;
   if((authMode==='admin' && profile?.role!=='admin') || (authMode!=='admin' && profile?.role==='admin')){await supabase.auth.signOut();user=null;profile=null;message('authMessage',authMode==='admin'?'This account does not have administrator permissions.':'This is an administrator account. Please use Administrator sign-in.','error');openAuth();return;}
-  $('userLabel').textContent=profile?.display_name||user.email;
+  $('userLabel').textContent=(profile?.display_name||user.email)+(profile?.brewplan_email?' · '+profile.brewplan_email:'');
   $('authButton').textContent='Sign out';closeAuth();await loadOrders();await loadStaffAccess();
  }else{
   profile=null;staffCafes=[];$('userLabel').textContent='Browsing as guest';$('authButton').textContent='Sign in';$('staffTab').classList.add('hide');$('adminTab').classList.add('hide');if($('authView').classList.contains('hide'))closeAuth();else $('appView').classList.add('hide');
@@ -190,7 +224,7 @@ async function loadAdminDashboard(){
   supabase.from('recipes').select('id,title,description,created_at').eq('is_published',false).order('created_at',{ascending:false})
  ]);
  if(ue){$('adminUsers').innerHTML='<div class="error">'+esc(ue.message)+'</div>';return;}
- $('adminUsers').innerHTML=(users||[]).map(u=>'<div class="cartline"><div><strong>'+esc(u.display_name||'Unnamed account')+'</strong><div class="muted">'+esc(u.id.slice(0,8))+' · '+esc(u.role)+'</div></div>'+(u.id===user.id?'<span class="badge">Creator account</span>':'<button class="btn ghost" data-roleuser="'+u.id+'" data-role="'+(u.role==='admin'?'student':'admin')+'">'+(u.role==='admin'?'Make student':'Make admin')+'</button>')+'</div>').join('')||'<div class="empty">No accounts found.</div>';
+ $('adminUsers').innerHTML=(users||[]).map(u=>'<div class="cartline"><div><strong>'+esc(u.display_name||'Unnamed account')+'</strong><div class="muted">'+esc(u.id.slice(0,8))+' · '+esc(u.role)+'</div></div>'+(u.id===user.id?'<span class="badge">Creator account</span>':(u.role==='admin'?'<button class="btn ghost" data-roleuser="'+u.id+'" data-role="student">Revoke admin</button>':'<span class="muted">Student access</span>'))+'</div>').join('')||'<div class="empty">No accounts found.</div>';
  document.querySelectorAll('[data-roleuser]').forEach(b=>b.onclick=async()=>{const {error}=await supabase.rpc('admin_set_profile_role',{p_user_id:b.dataset.roleuser,p_role:b.dataset.role});message('adminMessage',error?error.message:'Account role updated.',error?'error':'success');if(!error)loadAdminDashboard();});
  $('adminStaffUser').innerHTML=(users||[]).map(u=>'<option value="'+u.id+'">'+esc(u.display_name||'Unnamed')+' · '+esc(u.role)+'</option>').join('');
  $('adminStaffCafe').innerHTML=(cafeRows||[]).map(x=>'<option value="'+x.id+'">'+esc(x.name)+'</option>').join('');
