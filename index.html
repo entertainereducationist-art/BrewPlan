@@ -134,7 +134,7 @@ async function refreshSession(){
   $('userLabel').textContent=profile?.display_name||user.email;
   $('authButton').textContent='Sign out';closeAuth();await loadOrders();await loadStaffAccess();
  }else{
-  profile=null;staffCafes=[];$('userLabel').textContent='Browsing as guest';$('authButton').textContent='Sign in';$('staffTab').classList.add('hide');closeAuth();
+  profile=null;staffCafes=[];$('userLabel').textContent='Browsing as guest';$('authButton').textContent='Sign in';$('staffTab').classList.add('hide');$('adminTab').classList.add('hide');if($('authView').classList.contains('hide'))closeAuth();else $('appView').classList.add('hide');
  }
 }
 async function loadStaffAccess(){
