@@ -1,30 +1,156 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BrewPlan | NUST</title>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#143e31">
+<title>BrewPlan | NUST H-12</title>
 <style>
-:root{--g:#164b38;--m:#e8f2eb;--c:#fbf8f1;--ink:#1d2a23;--mut:#68766e;--line:#e4e9e3}*{box-sizing:border-box}body{margin:0;background:var(--c);color:var(--ink);font:15px/1.5 system-ui,Arial}header{background:var(--g);color:white;padding:22px max(5vw,20px);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}h1{margin:0;font-size:27px}header p{margin:2px 0 0;color:#dce9df}.wrap{max-width:1120px;margin:28px auto;padding:0 18px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}.tabs button,.btn{border:0;border-radius:10px;padding:10px 15px;background:var(--m);color:var(--g);font-weight:650;cursor:pointer}.tabs button.active,.btn.primary{background:var(--g);color:white}.layout{display:grid;grid-template-columns:1.3fr .7fr;gap:18px}.panel,.tile{background:white;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 4px 18px #203b2910}.panel h2{margin:0 0 14px;font-size:19px}.cafes,.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}.cafe,.item{border:1px solid var(--line);padding:13px;border-radius:12px;cursor:pointer}.cafe.selected{border:2px solid var(--g);background:var(--m)}.muted,small{color:var(--mut)}.item{cursor:default}.item strong{display:block}.item button{margin-top:9px}.field{display:grid;gap:5px;margin:10px 0}.field input,.field select,.field textarea{padding:11px;border:1px solid #d7dfd8;border-radius:9px;font:inherit;width:100%}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.cartline{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding:8px 0}.hide{display:none}.notice{background:#fff6df;border:1px solid #f0dfad;padding:10px;border-radius:10px;color:#765b1e}.recipe{padding:13px;border:1px solid var(--line);border-radius:12px;margin:9px 0}.footer{margin:30px 0;color:var(--mut);font-size:13px}@media(max-width:760px){.layout{grid-template-columns:1fr}header{align-items:flex-start}}
-</style></head><body><header><div><h1>☕ BrewPlan</h1><p>NUST H-12 · Café pre-ordering & recipe discovery</p></div><span>Student project prototype</span></header>
-<main class="wrap"><nav class="tabs"><button class="active" data-tab="order">Order food</button><button data-tab="recipes">Recipes</button><button data-tab="history">My bookings</button><button data-tab="admin">Café admin</button></nav>
-<section id="order"><div class="panel"><h2>Choose your café</h2><div class="cafes" id="cafes"></div><p class="muted">Select a café to browse its menu. Menu entries and prices must be verified with the café before launch.</p></div><div class="layout" style="margin-top:18px"><div class="panel"><h2 id="menuTitle">Menu</h2><div class="field"><input id="search" placeholder="Search menu items…"></div><div id="menu" class="menu"></div></div><aside class="panel"><h2>Your order</h2><div id="cart"></div><div class="field"><label>Pickup date</label><input id="date" type="date"></div><div class="field"><label>Pickup time</label><input id="time" type="time"></div><div class="field"><label>Pickup method</label><select id="method"><option>Takeaway</option><option>Dine-in</option></select></div><div class="field"><label>Your name</label><input id="customer" placeholder="Student name"></div><div class="field"><label>Contact (optional)</label><input id="contact" placeholder="Phone or email"></div><p class="notice">Prices are currently unverified. Your café must confirm the total when accepting the order.</p><button class="btn primary" id="book">Place pre-order</button><p id="bookingMsg" aria-live="polite"></p></aside></div></section>
-<section id="recipes" class="hide"><div class="panel"><h2>Recipe corner</h2><p class="muted">Simple student-friendly ideas. Add your own recipe below.</p><div id="recipesList"></div><h3>Share a recipe</h3><div class="field"><input id="rname" placeholder="Recipe name"></div><div class="field"><textarea id="ring" placeholder="Ingredients and steps"></textarea></div><button class="btn primary" id="addRecipe">Add recipe</button></div></section>
-<section id="history" class="hide"><div class="panel"><h2>My bookings</h2><div id="historyList"></div></div></section>
-<section id="admin" class="hide"><div class="panel"><h2>Demo café management</h2><p class="notice">This demo admin area is not secured. Do not use it for real customer data.</p><div class="field"><label>New menu item</label><input id="newItem" placeholder="Item name"></div><div class="field"><label>Café</label><select id="adminCafe"></select></div><button class="btn primary" id="addItem">Add item</button><h3>Current menu data</h3><button class="btn" id="export">Export bookings CSV</button><div id="adminList"></div></div></section>
-<p class="footer">BrewPlan is a prototype. Data is stored only in this browser using local storage. No real-time café integration, payments, shared database, or secure staff accounts are connected.</p></main>
-<script>
-const cafes=['C1','C2','C3 / Center Point','C4','S3H','Nice Café','Coffee Lounge','Inno Café','Retro Café'];
-const starter=['Chicken sandwich','Zinger burger','Fries','Tea','Coffee','Club sandwich','Paratha roll','Fresh juice'];
-let data=JSON.parse(localStorage.getItem('brewplan-v1')||'null')||{menus:Object.fromEntries(cafes.map(c=>[c,[]])),bookings:[],recipes:[{name:'Masala omelette toast',body:'Eggs, onion, tomato, green chilli, bread. Sauté vegetables, add beaten eggs, cook and serve on toast.'},{name:'Iced coffee',body:'Coffee, milk, ice and sugar. Dissolve coffee, blend with chilled milk and ice.'}]};
-let selected=cafes[0],cart={};const $=id=>document.getElementById(id);function save(){localStorage.setItem('brewplan-v1',JSON.stringify(data))}
-function renderCafes(){$('cafes').innerHTML=cafes.map(c=>'<div class="cafe '+(selected===c?'selected':'')+'" data-cafe="'+c+'"><strong>'+c+'</strong><small> · Menu awaiting verification</small></div>').join('');document.querySelectorAll('[data-cafe]').forEach(x=>x.onclick=()=>{selected=x.dataset.cafe;cart={};render()})}
-function renderMenu(){let q=$('search').value.toLowerCase();$('menuTitle').textContent=selected+' menu';let items=data.menus[selected];$('menu').innerHTML=(items.length?items:starter).filter(x=>x.toLowerCase().includes(q)).map((x,i)=>'<div class="item"><strong>'+x+'</strong><small>Price: not verified</small><br><button class="btn" data-add="'+encodeURIComponent(x)+'">Add to order</button></div>').join('')||'<p class="muted">No matching items.</p>';document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{let n=decodeURIComponent(b.dataset.add);cart[n]=(cart[n]||0)+1;renderCart()})}
-function renderCart(){$('cart').innerHTML=Object.keys(cart).length?Object.entries(cart).map(([n,q])=>'<div class="cartline"><span>'+n+' × '+q+'</span><button class="btn" data-remove="'+encodeURIComponent(n)+'">−</button></div>').join(''):'<p class="muted">Your basket is empty.</p>';document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{let n=decodeURIComponent(b.dataset.remove);if(--cart[n]<=0)delete cart[n];renderCart()})}
-function renderHistory(){$('historyList').innerHTML=data.bookings.length?data.bookings.slice().reverse().map(b=>'<div class="recipe"><strong>'+b.ref+' · '+b.cafe+'</strong><p>'+b.items+' · '+b.date+' '+b.time+' · '+b.method+'</p><small>'+b.name+' · Status: '+b.status+'</small></div>').join(''):'<p class="muted">No bookings in this browser yet.</p>'}
-function renderRecipes(){$('recipesList').innerHTML=data.recipes.map(r=>'<div class="recipe"><strong>'+r.name+'</strong><p>'+r.body+'</p></div>').join('')}
-function renderAdmin(){$('adminCafe').innerHTML=cafes.map(c=>'<option>'+c+'</option>').join('');$('adminList').innerHTML=cafes.map(c=>'<div class="recipe"><strong>'+c+'</strong><p>'+data.menus[c].join(', ')+'</p></div>').join('')}
-function render(){renderCafes();renderMenu();renderCart();renderHistory();renderRecipes();renderAdmin();save()}
-document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['order','recipes','history','admin'].forEach(t=>$(t).classList.toggle('hide',t!==b.dataset.tab))});
-$('search').oninput=renderMenu;$('book').onclick=()=>{if(!Object.keys(cart).length)return $('bookingMsg').textContent='Add at least one item first.';if(!$('date').value||!$('time').value||!$('customer').value.trim())return $('bookingMsg').textContent='Please enter your name, date and pickup time.';let ref='BP-'+Date.now().toString().slice(-7);data.bookings.push({ref,cafe:selected,items:Object.entries(cart).map(([n,q])=>n+' × '+q).join(', '),date:$('date').value,time:$('time').value,method:$('method').value,name:$('customer').value,contact:$('contact').value,status:'Pending café confirmation'});cart={};save();render();$('bookingMsg').textContent='Saved on this device. Reference: '+ref+'. Please confirm directly with the café.'};
-$('addRecipe').onclick=()=>{if(!$('rname').value.trim()||!$('ring').value.trim())return;data.recipes.push({name:$('rname').value,body:$('ring').value});$('rname').value='';$('ring').value='';renderRecipes();save()};
-$('addItem').onclick=()=>{let n=$('newItem').value.trim(),c=$('adminCafe').value;if(!n)return;data.menus[c].push(n);$('newItem').value='';render()};
-$('export').onclick=()=>{let rows=[['Reference','Cafe','Items','Date','Time','Method','Name','Contact','Status'],...data.bookings.map(b=>[b.ref,b.cafe,b.items,b.date,b.time,b.method,b.name,b.contact,b.status])];let csv=rows.map(r=>r.map(v=>'"'+String(v||'').replaceAll('"','""')+'"').join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='brewplan-bookings.csv';a.click()};
-$('date').min=new Date().toISOString().slice(0,10);render();
-</script></body></html>
+:root{--green:#143e31;--green2:#205c47;--mint:#e8f1eb;--cream:#f8f7f1;--ink:#1c2922;--muted:#718078;--line:#e2e8e2;--white:#fff;--gold:#d5a64c;--red:#a33e35}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial}button,input,textarea,select{font:inherit}button{cursor:pointer}header{background:var(--green);color:white;padding:19px max(4vw,20px);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:#ffffff18;display:grid;place-items:center;font-size:24px}h1{font-size:24px;margin:0;letter-spacing:-.6px}header p{margin:2px 0 0;color:#d5e4da;font-size:13px}.topright{display:flex;align-items:center;gap:10px}.wrap{max-width:1120px;margin:28px auto;padding:0 18px}.hero{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}.eyebrow{color:var(--green2);font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}.hero h2{font-size:29px;line-height:1.15;margin:5px 0}.hero p{margin:5px 0;color:var(--muted)}.tabs{display:flex;gap:8px;overflow:auto;padding-bottom:5px;margin-bottom:18px}.tabs button,.btn{border:0;border-radius:11px;padding:10px 15px;background:var(--mint);color:var(--green);font-weight:700;white-space:nowrap}.tabs button.active,.btn.primary{background:var(--green);color:white}.btn:disabled{opacity:.5;cursor:not-allowed}.btn.ghost{background:#f1f3ef;color:var(--ink)}.btn.danger{background:#f9e9e7;color:var(--red)}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:17px}.panel{background:white;border:1px solid var(--line);border-radius:17px;padding:19px;box-shadow:0 5px 22px #1a3b2910}.panel h3{font-size:18px;margin:0 0 13px}.panel h4{margin:0 0 7px}.muted,small{color:var(--muted)}.cafes{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px}.cafe{border:1px solid var(--line);border-radius:12px;padding:12px;text-align:left;background:white;color:var(--ink)}.cafe.selected{border:2px solid var(--green);background:var(--mint);padding:11px}.cafe strong{display:block}.cafe small{font-size:11px}.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.item{border:1px solid var(--line);border-radius:13px;padding:13px;display:flex;flex-direction:column;gap:7px}.item .desc{font-size:12px;color:var(--muted);min-height:18px}.price{font-weight:800;color:var(--green)}.item .btn{margin-top:auto}.field{display:grid;gap:5px;margin:10px 0}.field label{font-size:12px;font-weight:750;color:#48584e}.field input,.field textarea,.field select{width:100%;padding:11px 12px;border:1px solid #dbe3dc;border-radius:10px;background:#fff;color:var(--ink);outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--green2);box-shadow:0 0 0 3px #205c4714}.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.between{display:flex;justify-content:space-between;align-items:center;gap:10px}.cartline{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}.qty{display:flex;align-items:center;gap:8px}.qty button{width:27px;height:27px;border:0;border-radius:8px;background:var(--mint);color:var(--green);font-weight:800}.total{font-size:19px;font-weight:850;margin:13px 0}.notice{background:#fff6df;border:1px solid #efdfb2;color:#735b22;padding:11px 12px;border-radius:11px;font-size:13px}.success{background:#eaf5ed;border:1px solid #cce4d2;color:#23583b;padding:11px 12px;border-radius:11px}.error{background:#fbeceb;border:1px solid #f0d1ce;color:#8b302a;padding:11px 12px;border-radius:11px}.hide{display:none!important}.authbox{max-width:440px;margin:35px auto}.authbox .panel{padding:23px}.authbox h2{margin:0 0 4px}.badge{display:inline-block;padding:4px 8px;border-radius:99px;background:var(--mint);color:var(--green);font-size:11px;font-weight:800}.order{border:1px solid var(--line);border-radius:13px;padding:14px;margin:10px 0}.order p{margin:5px 0}.orderitems{font-size:13px;color:var(--muted)}.footer{padding:25px 0 35px;color:var(--muted);font-size:12px}.empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}.right{text-align:right}.divider{height:1px;background:var(--line);margin:15px 0}.hidden{display:none}@media(max-width:760px){.grid{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}.hero h2{font-size:25px}.wrap{margin:20px auto}.panel{padding:15px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">☕</div><div><h1>BrewPlan</h1><p>NUST H-12 · Campus cafés, made easier</p></div></div><div class="topright"><span id="userLabel" class="muted" style="color:#d5e4da">Browsing as guest</span><button id="authButton" class="btn" style="background:#fff;color:var(--green)">Sign in</button></div></header>
+<main class="wrap">
+<div class="hero"><div><div class="eyebrow">Your campus café companion</div><h2>Good food. Less waiting.</h2><p>Browse café menus, build your pickup order and keep track of it.</p></div><span class="badge">NUST H-12</span></div>
+<section id="authView" class="authbox hide"><div class="panel"><h2 id="authTitle">Welcome back</h2><p class="muted" id="authSubtitle">Sign in to place orders and see your order history.</p><div class="field" id="nameField"><label>Your name</label><input id="authName" autocomplete="name" placeholder="Student name"></div><div class="field"><label>Email address</label><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div><button class="btn primary" id="authSubmit" style="width:100%">Sign in</button><p id="authMessage" aria-live="polite"></p><div class="divider"></div><p class="muted" style="font-size:13px" id="authToggleText">New to BrewPlan? <button class="btn ghost" id="authToggle">Create an account</button></p></div></section>
+<div id="appView">
+<nav class="tabs"><button class="active" data-tab="order">Order food</button><button data-tab="history">My orders</button><button data-tab="staff" id="staffTab" class="hide">Café dashboard</button></nav>
+<section id="orderTab">
+<div class="panel"><div class="between"><h3>Choose your café</h3><small id="cafeCount">Loading cafés…</small></div><div id="cafes" class="cafes"></div></div>
+<div class="grid" style="margin-top:17px"><div class="panel"><div class="between"><h3 id="menuTitle">Menu</h3><span id="menuCount" class="muted"></span></div><div class="field"><input id="search" placeholder="Search this café’s menu…"></div><div id="menu" class="menu"><div class="empty">Loading menu…</div></div></div>
+<aside class="panel"><h3>Your pickup order</h3><div id="cart"><div class="empty">Your basket is empty.</div></div><div class="field"><label for="pickupName">Name for pickup</label><input id="pickupName" placeholder="Your name"></div><div class="field"><label for="pickupNote">Pickup note (optional)</label><textarea id="pickupNote" rows="2" placeholder="Anything the café should know?"></textarea></div><div class="notice">You’ll pay at the café. Only menu items with café-verified prices can be ordered. Prices shown are set by café staff.</div><button class="btn primary" id="placeOrder" style="width:100%;margin-top:13px">Place order</button><p id="orderMessage" aria-live="polite"></p></aside></div>
+</section>
+<section id="historyTab" class="hide"><div class="panel"><div class="between"><h3>Your order history</h3><button class="btn ghost" id="refreshOrders">Refresh</button></div><div id="historyList"><div class="empty">Sign in to see your orders.</div></div></div></section>
+<section id="staffTabPanel" class="hide"><div class="panel"><h3>Café dashboard</h3><p class="muted">Manage menu listings and update incoming order statuses for cafés assigned to your staff account.</p><div class="field"><label for="staffCafe">Your café</label><select id="staffCafe"></select></div><div id="staffOrders"></div><div class="divider"></div><h4>Add or update menu item</h4><div class="grid"><div><div class="field"><label>Item name</label><input id="itemName" placeholder="e.g. Chicken sandwich"></div><div class="field"><label>Description</label><input id="itemDescription" placeholder="Optional details"></div></div><div><div class="field"><label>Price (PKR)</label><input id="itemPrice" type="number" min="0" step="1" placeholder="Enter current café price"></div><div class="field"><label>Category</label><input id="itemCategory" placeholder="Snacks, drinks…"></div></div></div><label class="row" style="font-size:13px;margin:8px 0"><input id="priceVerified" type="checkbox"> I confirm this price directly with the café</label><button class="btn primary" id="saveMenuItem">Save menu item</button><p id="staffMessage" aria-live="polite"></p><div class="divider"></div><h4>Menu for this café</h4><div id="staffMenu"></div></div></section>
+</div>
+<p class="footer">BrewPlan · NUST H-12. Menu listings and prices are supplied by participating café staff. Orders are sent to BrewPlan’s shared database; café fulfilment depends on staff onboarding. No online payment is collected.</p>
+</main>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.80.0';
+const SUPABASE_URL = 'https://qguewdxozgcdiekjdqiv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_H2FWOLPrRLXeW-XYFN7agQ_mkvxMJMc';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+let user = null, profile = null, cafes = [], selectedCafe = null, cart = {}, staffCafes = [];
+let authMode = 'signin';
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = value => value == null ? 'Price not set' : 'PKR ' + Number(value).toLocaleString('en-PK',{maximumFractionDigits:2});
+function message(id, text, kind='') { const el=$(id); el.className=kind; el.textContent=text; }
+function showTab(tab){document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['order','history','staff'].forEach(t=>$(t+'Tab').classList.toggle('hide',t!==tab));}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{showTab(b.dataset.tab);if(b.dataset.tab==='history')loadOrders();if(b.dataset.tab==='staff')loadStaffDashboard();}));
+async function loadCafes(){
+ const {data,error}=await supabase.from('cafes').select('id,name,cafe_code').eq('is_active',true).order('name');
+ if(error){$('cafes').innerHTML='<div class="error">Could not load cafés: '+esc(error.message)+'</div>';return;}
+ cafes=data||[];$('cafeCount').textContent=cafes.length+' cafés';
+ if(!selectedCafe||!cafes.some(c=>c.id===selectedCafe.id))selectedCafe=cafes[0]||null;
+ renderCafes();await loadMenu();
+}
+function renderCafes(){
+ $('cafes').innerHTML=cafes.map(c=>'<button class="cafe '+(selectedCafe?.id===c.id?'selected':'')+'" data-cafe="'+c.id+'"><strong>'+esc(c.name)+'</strong><small>'+esc(c.cafe_code)+'</small></button>').join('')||'<div class="empty">No cafés are currently listed.</div>';
+ document.querySelectorAll('[data-cafe]').forEach(b=>b.onclick=async()=>{selectedCafe=cafes.find(c=>c.id===b.dataset.cafe);cart={};renderCafes();renderCart();await loadMenu();});
+}
+async function loadMenu(){
+ if(!selectedCafe){$('menu').innerHTML='<div class="empty">Choose a café to view its menu.</div>';return;}
+ $('menuTitle').textContent=selectedCafe.name+' menu';
+ const {data,error}=await supabase.from('menu_items').select('id,name,description,category,price,price_verified,is_available').eq('cafe_id',selectedCafe.id).eq('is_available',true).order('name');
+ if(error){$('menu').innerHTML='<div class="error">'+esc(error.message)+'</div>';return;}
+ const q=$('search').value.toLowerCase();const items=(data||[]).filter(i=>(i.name+' '+(i.description||'')+' '+(i.category||'')).toLowerCase().includes(q));
+ $('menuCount').textContent=items.length+' items';
+ $('menu').innerHTML=items.map(i=>'<div class="item"><div><strong>'+esc(i.name)+'</strong><div class="desc">'+esc(i.description||i.category||'')+'</div></div><div class="between"><span class="price">'+(i.price_verified&&i.price!=null?money(i.price):'<span class="muted">Price awaiting verification</span>')+'</span></div><button class="btn" data-add="'+i.id+'" '+(!(i.price_verified&&i.price!=null)?'disabled':'')+'>Add to order</button></div>').join('')||'<div class="empty">No verified menu items yet. Café staff can add the current menu and prices.</div>';
+ document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const item=items.find(i=>i.id===b.dataset.add);if(item){cart[item.id]={...item,quantity:(cart[item.id]?.quantity||0)+1};renderCart();}});
+}
+function renderCart(){
+ const entries=Object.values(cart);
+ if(!entries.length){$('cart').innerHTML='<div class="empty">Your basket is empty.</div>';return;}
+ const total=entries.reduce((s,i)=>s+Number(i.price)*i.quantity,0);
+ $('cart').innerHTML=entries.map(i=>'<div class="cartline"><div><strong>'+esc(i.name)+'</strong><div class="muted">'+money(i.price)+'</div></div><div class="qty"><button data-dec="'+i.id+'">−</button><b>'+i.quantity+'</b><button data-inc="'+i.id+'">+</button></div></div>').join('')+'<div class="total between"><span>Subtotal</span><span>'+money(total)+'</span></div>';
+ document.querySelectorAll('[data-dec]').forEach(b=>b.onclick=()=>{const i=cart[b.dataset.dec];i.quantity--;if(i.quantity<=0)delete cart[b.dataset.dec];renderCart();});
+ document.querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>{cart[b.dataset.inc].quantity++;renderCart();});
+}
+async function placeOrder(){
+ if(!user){message('orderMessage','Please sign in before placing an order.','error');openAuth();return;}
+ const entries=Object.values(cart);if(!entries.length){message('orderMessage','Add at least one item to your basket.','error');return;}
+ if(!$('pickupName').value.trim()){message('orderMessage','Enter a name for pickup.','error');return;}
+ $('placeOrder').disabled=true;message('orderMessage','Sending your order…');
+ const payload=entries.map(i=>({menu_item_id:i.id,quantity:i.quantity}));
+ const {data,error}=await supabase.rpc('place_order',{p_cafe_id:selectedCafe.id,p_pickup_name:$('pickupName').value.trim(),p_pickup_note:$('pickupNote').value.trim()||null,p_items:payload});
+ $('placeOrder').disabled=false;
+ if(error){message('orderMessage',error.message,'error');return;}
+ cart={};renderCart();message('orderMessage','Order #'+data.order_number+' placed. Check My orders for status. Pay at the café.','success');
+}
+async function loadOrders(){
+ if(!user){$('historyList').innerHTML='<div class="empty">Sign in to view your orders.</div>';return;}
+ const {data,error}=await supabase.from('orders').select('id,order_number,status,pickup_name,pickup_note,subtotal,currency,created_at,cafes(name),order_items(item_name,quantity,unit_price,line_total)').eq('customer_id',user.id).order('created_at',{ascending:false}).limit(50);
+ if(error){$('historyList').innerHTML='<div class="error">'+esc(error.message)+'</div>';return;}
+ $('historyList').innerHTML=(data||[]).map(o=>'<div class="order"><div class="between"><strong>#'+o.order_number+' · '+esc(o.cafes?.name||'Café')+'</strong><span class="badge">'+esc(o.status)+'</span></div><p class="orderitems">'+(o.order_items||[]).map(i=>esc(i.item_name)+' × '+i.quantity+' ('+money(i.line_total)+')').join(' · ')+'</p><div class="between"><small>'+new Date(o.created_at).toLocaleString()+'</small><strong>'+money(o.subtotal)+'</strong></div>'+(o.pickup_note?'<small>Note: '+esc(o.pickup_note)+'</small>':'')+'</div>').join('')||'<div class="empty">No orders yet. Your placed orders will appear here.</div>';
+}
+function openAuth(){ $('authView').classList.remove('hide');$('appView').classList.add('hide'); }
+function closeAuth(){ $('authView').classList.add('hide');$('appView').classList.remove('hide'); }
+function renderAuthMode(){
+ $('authTitle').textContent=authMode==='signin'?'Welcome back':'Create your BrewPlan account';
+ $('authSubtitle').textContent=authMode==='signin'?'Sign in to place orders and track pickups.':'Use your email to create a student account.';
+ $('authSubmit').textContent=authMode==='signin'?'Sign in':'Create account';
+ $('nameField').classList.toggle('hide',authMode==='signin');
+ $('authToggleText').innerHTML=authMode==='signin'?'New to BrewPlan? ':'Already registered? ';
+ const b=document.createElement('button');b.className='btn ghost';b.textContent=authMode==='signin'?'Create an account':'Sign in';b.onclick=()=>{authMode=authMode==='signin'?'signup':'signin';renderAuthMode();message('authMessage','');};$('authToggleText').appendChild(b);
+}
+async function submitAuth(){
+ const email=$('authEmail').value.trim(),password=$('authPassword').value;
+ if(!email||!password){message('authMessage','Enter your email and password.','error');return;}
+ $('authSubmit').disabled=true;message('authMessage','Please wait…');
+ let result;
+ if(authMode==='signup')result=await supabase.auth.signUp({email,password,options:{data:{full_name:$('authName').value.trim()}}});
+ else result=await supabase.auth.signInWithPassword({email,password});
+ $('authSubmit').disabled=false;
+ if(result.error){message('authMessage',result.error.message,'error');return;}
+ if(authMode==='signup'&&!result.data.session){message('authMessage','Account created. Check your email to confirm it, then sign in.','success');return;}
+ message('authMessage','Signed in.','success');await refreshSession();
+}
+async function refreshSession(){
+ const {data}=await supabase.auth.getSession();user=data.session?.user||null;
+ if(user){
+  const {data:p}=await supabase.from('profiles').select('display_name,role').eq('id',user.id).maybeSingle();profile=p;
+  $('userLabel').textContent=profile?.display_name||user.email;
+  $('authButton').textContent='Sign out';closeAuth();await loadOrders();await loadStaffAccess();
+ }else{
+  profile=null;staffCafes=[];$('userLabel').textContent='Browsing as guest';$('authButton').textContent='Sign in';$('staffTab').classList.add('hide');closeAuth();
+ }
+}
+async function loadStaffAccess(){
+ if(!user)return;
+ const {data,error}=await supabase.from('cafe_staff').select('cafe_id,staff_role,cafes(id,name)').eq('user_id',user.id);
+ staffCafes=error?[]:(data||[]);
+ $('staffTab').classList.toggle('hide',staffCafes.length===0);
+ $('staffCafe').innerHTML=staffCafes.map(s=>'<option value="'+s.cafe_id+'">'+esc(s.cafes?.name||'Café')+'</option>').join('');
+}
+function currentStaffCafe(){return staffCafes.find(s=>s.cafe_id===$('staffCafe').value)||staffCafes[0];}
+async function loadStaffDashboard(){
+ const staff=currentStaffCafe();if(!staff){$('staffOrders').innerHTML='<div class="notice">This account is not assigned to a café yet. Ask the BrewPlan administrator to add your staff account.</div>';return;}
+ const cafeId=staff.cafe_id;
+ const [{data:orders,error:oe},{data:items,error:ie}]=await Promise.all([
+  supabase.from('orders').select('id,order_number,status,pickup_name,pickup_note,created_at,order_items(item_name,quantity)').eq('cafe_id',cafeId).order('created_at',{ascending:false}).limit(50),
+  supabase.from('menu_items').select('id,name,description,category,price,price_verified,is_available').eq('cafe_id',cafeId).order('name')
+ ]);
+ if(oe){$('staffOrders').innerHTML='<div class="error">'+esc(oe.message)+'</div>';return;}
+ $('staffOrders').innerHTML='<h4>Incoming orders</h4>'+((orders||[]).map(o=>'<div class="order"><div class="between"><strong>Order #'+o.order_number+' · '+esc(o.pickup_name)+'</strong><span class="badge">'+esc(o.status)+'</span></div><p class="orderitems">'+(o.order_items||[]).map(i=>esc(i.item_name)+' × '+i.quantity).join(' · ')+'</p><div class="row"><select data-status="'+o.id+'" aria-label="Update order status"><option '+(o.status==='pending'?'selected':'')+'>pending</option><option '+(o.status==='accepted'?'selected':'')+'>accepted</option><option '+(o.status==='preparing'?'selected':'')+'>preparing</option><option '+(o.status==='ready'?'selected':'')+'>ready</option><option '+(o.status==='completed'?'selected':'')+'>completed</option><option '+(o.status==='rejected'?'selected':'')+'>rejected</option></select><button class="btn" data-updatestatus="'+o.id+'">Update</button></div></div>').join('')||'<div class="empty">No orders have arrived for this café.</div>');
+ document.querySelectorAll('[data-updatestatus]').forEach(b=>b.onclick=async()=>{const id=b.dataset.updatestatus;const status=document.querySelector('[data-status="'+id+'"]').value;const {error}=await supabase.from('orders').update({status}).eq('id',id);message('staffMessage',error?error.message:'Order status updated.',error?'error':'success');if(!error)loadStaffDashboard();});
+ $('staffMenu').innerHTML=(items||[]).map(i=>'<div class="cartline"><div><strong>'+esc(i.name)+'</strong><div class="muted">'+(i.price_verified&&i.price!=null?money(i.price):'Price unverified')+' · '+(i.is_available?'Available':'Hidden')+'</div></div><button class="btn ghost" data-toggleitem="'+i.id+'" data-next="'+(!i.is_available)+'">'+(i.is_available?'Hide':'Show')+'</button></div>').join('')||'<div class="empty">No menu items yet. Add verified items above.</div>';
+ document.querySelectorAll('[data-toggleitem]').forEach(b=>b.onclick=async()=>{const {error}=await supabase.from('menu_items').update({is_available:b.dataset.next==='true'}).eq('id',b.dataset.toggleitem);message('staffMessage',error?error.message:'Menu availability updated.',error?'error':'success');if(!error)loadStaffDashboard();});
+}
+async function saveMenuItem(){
+ const staff=currentStaffCafe();if(!staff){message('staffMessage','No café is assigned to this account.','error');return;}
+ const name=$('itemName').value.trim(),priceText=$('itemPrice').value,verified=$('priceVerified').checked;
+ if(!name){message('staffMessage','Enter the menu item name.','error');return;}
+ if(verified&&priceText===''){message('staffMessage','Enter a price before verifying it.','error');return;}
+ const price=priceText===''?null:Number(priceText);
+ if(price!=null&&(!Number.isFinite(price)||price<0)){message('staffMessage','Enter a valid non-negative price.','error');return;}
+ const {error}=await supabase.from('menu_items').upsert({cafe_id:staff.cafe_id,name,description:$('itemDescription').value.trim()||null,category:$('itemCategory').value.trim()||null,price,price_verified:verified&&price!=null,is_available:true},{onConflict:'cafe_id,name'});
+ if(error){message('staffMessage',error.message,'error');return;}
+ $('itemName').value='';$('itemDescription').value='';$('itemCategory').value='';$('itemPrice').value='';$('priceVerified').checked=false;
+ message('staffMessage','Menu item saved. It is visible to students if marked available.','success');await loadStaffDashboard();await loadMenu();
+}
+$('search').addEventListener('input',loadMenu);$('placeOrder').addEventListener('click',placeOrder);$('authSubmit').addEventListener('click',submitAuth);$('authToggle').addEventListener('click',()=>{authMode='signup';renderAuthMode();});$('authButton').addEventListener('click',async()=>{if(user){await supabase.auth.signOut();await refreshSession();}else{authMode='signin';renderAuthMode();openAuth();}});$('refreshOrders').addEventListener('click',loadOrders);$('saveMenuItem').addEventListener('click',saveMenuItem);$('staffCafe').addEventListener('change',loadStaffDashboard);
+supabase.auth.onAuthStateChange(()=>{setTimeout(refreshSession,0);});
+renderAuthMode();await loadCafes();await refreshSession();
+</script>
+</body></html>
