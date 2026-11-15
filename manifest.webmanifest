@@ -1,0 +1,25 @@
+{
+  "id": "/",
+  "name": "BrewPlan — NUST H-12",
+  "short_name": "BrewPlan",
+  "description": "Campus cafés, menus and pickup ordering at NUST H-12.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07101f",
+  "theme_color": "#081326",
+  "categories": [
+    "food",
+    "lifestyle",
+    "education"
+  ],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
