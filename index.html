@@ -145,9 +145,9 @@ function renderAuthMode(){
  $('authTitle').textContent=authMode==='admin'?'Administrator sign-in':(authMode==='signin'?'Student sign-in':'Create your student account');
  $('authSubtitle').textContent=authMode==='signin'?'Sign in with your registered email and password.':(authMode==='signup'?'Create your student profile. BrewPlan will generate your student ID and a strong password.':'Sign in with the founder administrator account.');
  $('authSubmit').textContent=authMode==='signup'?'Create student account':(authMode==='adminSignup'?'Create founder account':'Sign in');
- $('nameField').classList.toggle('hide',authMode!=='signup');
+ $('nameField').classList.toggle('hide',authMode!=='signup'&&authMode!=='adminSignup');
  $('studentDetails').classList.toggle('hide',authMode!=='signup');
- $('passwordField').classList.toggle('hide',authMode==='signup');
+ $('passwordField').classList.toggle('hide',authMode==='signup'||authMode==='adminSignup');
  $('accountCredentials').classList.add('hide');
  $('authEmail').readOnly=authMode==='admin'||authMode==='adminSignup';
  if(authMode==='admin'||authMode==='adminSignup')$('authEmail').value=FOUNDER_EMAIL;
@@ -159,7 +159,7 @@ function renderAuthMode(){
  if(authMode==='signin'||authMode==='signup'){
   $('authToggleText').append(authMode==='signin'?'New to BrewPlan? ':'Already registered? ');
   const b=document.createElement('button');b.className='btn ghost';b.textContent=authMode==='signin'?'Create student account':'Student sign-in';b.onclick=()=>{authMode=authMode==='signin'?'signup':'signin';renderAuthMode();message('authMessage','');};$('authToggleText').appendChild(b);
- } else $('authSubtitle').textContent='Administrator accounts are created by the BrewPlan creator. Sign in with your assigned administrator credentials.';
+ } else $('authSubtitle').textContent=authMode==='adminSignup'?'Create the founder account using the creator email. Verify that email; administrator privileges are activated separately after verification.':'Administrator accounts are created by the BrewPlan creator. Sign in with your assigned administrator credentials.';
 }
 function makePassword(){
  const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*';
@@ -174,9 +174,13 @@ async function submitAuth(){
  const email=$('authEmail').value.trim().toLowerCase();
  let password=$('authPassword').value;
  if(!email){message('authMessage','Enter your real email address.','error');return;}
- if(authMode==='signup'){
-  const name=$('authName').value.trim(),department=$('authDepartment').value.trim(),school=$('authSchool').value.trim(),reg=$('authReg').value.trim(),batch=$('authBatch').value.trim();
-  if(!name||!department||!school||!reg||!batch){message('authMessage','Complete your name, department, school, registration number and batch.','error');return;}
+ if(authMode==='signup'||authMode==='adminSignup'){
+  const name=$('authName').value.trim();
+  if(!name){message('authMessage','Enter your full name.','error');return;}
+  if(authMode==='signup'){
+  const department=$('authDepartment').value.trim(),school=$('authSchool').value.trim(),reg=$('authReg').value.trim(),batch=$('authBatch').value.trim();
+  if(!department||!school||!reg||!batch){message('authMessage','Complete your department, school, registration number and batch.','error');return;}
+  }
   if(!email.includes('@')){message('authMessage','Enter a valid email address.','error');return;}
   password=makePassword();
   $('authPassword').value=password;
