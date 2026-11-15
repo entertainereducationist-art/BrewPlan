@@ -144,13 +144,15 @@ function closeAuth(){ $('authView').classList.add('hide');$('appView').classList
 function renderAuthMode(){
  $('authTitle').textContent=authMode==='admin'?'Administrator sign-in':(authMode==='signin'?'Student sign-in':'Create your student account');
  $('authSubtitle').textContent=authMode==='signin'?'Sign in with your registered email and password.':(authMode==='signup'?'Create your student profile. BrewPlan will generate your student ID and a strong password.':'Sign in with the founder administrator account.');
- $('authSubmit').textContent=authMode==='signup'?'Create student account':'Sign in';
+ $('authSubmit').textContent=authMode==='signup'?'Create student account':(authMode==='adminSignup'?'Create founder account':'Sign in');
  $('nameField').classList.toggle('hide',authMode!=='signup');
  $('studentDetails').classList.toggle('hide',authMode!=='signup');
  $('passwordField').classList.toggle('hide',authMode==='signup');
  $('accountCredentials').classList.add('hide');
- $('authEmail').readOnly=authMode==='admin';
- if(authMode==='admin')$('authEmail').value=FOUNDER_EMAIL;
+ $('authEmail').readOnly=authMode==='admin'||authMode==='adminSignup';
+ if(authMode==='admin'||authMode==='adminSignup')$('authEmail').value=FOUNDER_EMAIL;
+ $('adminLoginChoice').classList.toggle('hide',authMode==='admin'||authMode==='adminSignup');
+ $('founderSetupChoice').classList.toggle('hide',authMode==='adminSignup');
 
  $('authToggleText').innerHTML='';
  $('adminLoginChoice').classList.toggle('hide',authMode==='admin');
@@ -181,21 +183,19 @@ async function submitAuth(){
  }else if(!password){message('authMessage','Enter your password.','error');return;}
  $('authSubmit').disabled=true;message('authMessage','Please wait…');
  let result;
- if(authMode==='signup'){
-  const alias=makeStudentAlias();
-  result=await supabase.auth.signUp({email,password,options:{data:{
-   full_name:$('authName').value.trim(),department:$('authDepartment').value.trim(),
-   school:$('authSchool').value.trim(),registration_number:$('authReg').value.trim(),
-   batch:$('authBatch').value.trim(),phone:$('authPhone').value.trim(),brewplan_email:alias
-  }}});
+ if(authMode==='signup'||authMode==='adminSignup'){
+  const alias=authMode==='signup'?makeStudentAlias():null;
+  const metadata=authMode==='signup'?{full_name:$('authName').value.trim(),department:$('authDepartment').value.trim(),school:$('authSchool').value.trim(),registration_number:$('authReg').value.trim(),batch:$('authBatch').value.trim(),phone:$('authPhone').value.trim(),brewplan_email:alias}:{full_name:$('authName').value.trim()};
+  if(!metadata.full_name){$('authSubmit').disabled=false;message('authMessage','Enter your full name.','error');return;}
+  result=await supabase.auth.signUp({email,password,options:{data:metadata}});
   if(!result.error){
    $('accountCredentials').classList.remove('hide');
-   $('accountCredentials').innerHTML='<strong>Your BrewPlan account details</strong><br>Student ID: <b>'+esc(alias)+'</b><br>Generated password: <b>'+esc(password)+'</b><br><small>Save this password now. Use your real email to sign in and recover your account. This BrewPlan ID is an internal identifier, not an email inbox.</small>';
+   $('accountCredentials').innerHTML='<strong>'+(authMode==='adminSignup'?'Founder account details':'Your BrewPlan account details')+'</strong><br>'+(alias?'Student ID: <b>'+esc(alias)+'</b><br>':'')+'Generated password: <b>'+esc(password)+'</b><br><small>Save this password now. Use your real email to sign in and recover your account. '+(alias?'This BrewPlan ID is an internal identifier, not an email inbox.':'After you verify your email, the founder account will need secure activation before administrator access is enabled.')+'</small>';
   }
  }else result=await supabase.auth.signInWithPassword({email,password});
  $('authSubmit').disabled=false;
  if(result.error){message('authMessage',result.error.message,'error');return;}
- if(authMode==='signup'&&!result.data.session){message('authMessage','Account created. Check your real email inbox to confirm the account. Save the generated password shown above. Email verification remains required for account security.','success');return;}
+ if((authMode==='signup'||authMode==='adminSignup')&&!result.data.session){message('authMessage','Account created. Check your real email inbox to confirm the account. Save the generated password shown above. Email verification remains required for account security.','success');return;}
  message('authMessage','Signed in.','success');await refreshSession();
 }
 async function refreshSession(){
@@ -260,7 +260,7 @@ async function saveMenuItem(){
  $('itemName').value='';$('itemDescription').value='';$('itemCategory').value='';$('itemPrice').value='';$('priceVerified').checked=false;
  message('staffMessage','Menu item saved. It is visible to students if marked available.','success');await loadStaffDashboard();await loadMenu();
 }
-$('search').addEventListener('input',loadMenu);$('placeOrder').addEventListener('click',placeOrder);$('authSubmit').addEventListener('click',submitAuth);$('authButton').addEventListener('click',async()=>{if(user){await supabase.auth.signOut();await refreshSession();}else{authMode='signin';renderAuthMode();openAuth();}});$('refreshOrders').addEventListener('click',loadOrders);$('submitRecipe').addEventListener('click',submitRecipe);$('saveMenuItem').addEventListener('click',saveMenuItem);$('staffCafe').addEventListener('change',loadStaffDashboard);$('adminLoginChoice').addEventListener('click',()=>{authMode='admin';renderAuthMode();openAuth();});$('adminAssignStaff').addEventListener('click',assignStaff);
+$('search').addEventListener('input',loadMenu);$('placeOrder').addEventListener('click',placeOrder);$('authSubmit').addEventListener('click',submitAuth);$('authButton').addEventListener('click',async()=>{if(user){await supabase.auth.signOut();await refreshSession();}else{authMode='signin';renderAuthMode();openAuth();}});$('refreshOrders').addEventListener('click',loadOrders);$('submitRecipe').addEventListener('click',submitRecipe);$('saveMenuItem').addEventListener('click',saveMenuItem);$('staffCafe').addEventListener('change',loadStaffDashboard);$('adminLoginChoice').addEventListener('click',()=>{authMode='admin';renderAuthMode();openAuth();});$('founderSetupChoice').addEventListener('click',()=>{authMode='adminSignup';renderAuthMode();openAuth();});$('adminAssignStaff').addEventListener('click',assignStaff);
 supabase.auth.onAuthStateChange(()=>{setTimeout(refreshSession,0);});
 
 function applyAppearance(theme,wallpaper){
