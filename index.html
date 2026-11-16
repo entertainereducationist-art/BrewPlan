@@ -512,8 +512,8 @@ async function loadOrders(){
  if(error){$('historyList').innerHTML='<div class="error">'+esc(error.message)+'</div>';return;}
  $('historyList').innerHTML=(data||[]).map(o=>'<div class="order"><div class="between"><strong>#'+o.order_number+' · '+esc(o.cafes?.name||'Café')+'</strong><span class="badge">'+esc(o.status)+'</span></div><p class="orderitems">'+(o.order_items||[]).map(i=>esc(i.item_name)+' × '+i.quantity+' ('+money(i.line_total)+')').join(' · ')+'</p><div class="between"><small>'+new Date(o.created_at).toLocaleString()+'</small><strong>'+money(o.subtotal)+'</strong></div>'+(o.pickup_note?'<small>Note: '+esc(o.pickup_note)+'</small>':'')+'</div>').join('')||'<div class="empty">No orders yet. Your placed orders will appear here.</div>';
 }
-function openAuth(){ $('authView').classList.remove('hide');$('appView').classList.add('hide'); }
-function closeAuth(){ $('authView').classList.add('hide');$('appView').classList.remove('hide'); }
+function openAuth(){ $('bpRoleHeading').classList.add('hide');$('authView').classList.remove('hide');$('appView').classList.add('hide'); }
+function closeAuth(){ $('authView').classList.add('hide');$('appView').classList.remove('hide');if(document.body.dataset.role==='staff'||document.body.dataset.role==='admin')$('bpRoleHeading').classList.remove('hide'); }
 function renderAuthMode(){
  $('authSubmit').onclick=submitAuth;
  const registering=authMode==='signup'||authMode==='staffSignup'||authMode==='adminSignup';
@@ -584,7 +584,7 @@ async function submitAuth(){
 async function refreshSession(){
  const {data}=await supabase.auth.getSession();user=data.session?.user||null;
  if(user?.is_anonymous){
-  profile=null;staffCafes=[];const guestName=user.user_metadata?.display_name||'Guest customer';
+  profile=null;staffCafes=[];enterWorkspace('student');const guestName=user.user_metadata?.display_name||'Guest customer';
   $('userLabel').textContent='Guest checkout';$('accountName').textContent=guestName;$('accountId').textContent='No account or password required';$('accountRole').textContent='Guest customer';$('accountOnline').textContent='● Guest checkout';$('accountAction').textContent='Guest checkout — no account needed';$('bpStaffNav').classList.add('hide');$('bpAdminNav').classList.add('hide');$('authButton').textContent='Staff / Admin';$('staffTab').classList.add('hide');$('adminTab').classList.add('hide');closeAuth();await loadOrders();return;
  }
  if(user){
@@ -593,7 +593,7 @@ async function refreshSession(){
   $('userLabel').textContent=(profile?.display_name||user.email)+(profile?.brewplan_email?' · '+profile.brewplan_email:'');$('accountName').textContent=profile?.display_name||user.email;$('accountId').textContent=profile?.brewplan_email||user.email;$('accountRole').textContent=profile?.role==='admin'?'Administrator':profile?.role==='student'?'Student':'Account';$('bpAdminNav').classList.toggle('hide',profile?.role!=='admin');$('accountOnline').textContent='● Online';$('accountAction').textContent='View account details →';$('bpStaffNav').classList.toggle('hide',staffCafes.length===0);$('bpAdminNav').classList.toggle('hide',profile?.role!=='admin');
   $('authButton').textContent='Sign out';closeAuth();await loadOrders();await loadStaffAccess();if(profile?.role==='admin'){enterWorkspace('admin');}else if(staffCafes.length){enterWorkspace('staff');}else{enterWorkspace('student');}
  }else{
-  profile=null;staffCafes=[];$('userLabel').textContent='Order as guest · no sign-in';$('accountName').textContent='Guest customer';$('accountId').textContent='Enter your name at checkout';$('accountRole').textContent='Guest';$('accountOnline').textContent='● Ready to order';$('accountAction').textContent='No account needed to order';$('bpStaffNav').classList.add('hide');$('bpAdminNav').classList.add('hide');$('authButton').textContent='Staff / Admin';$('staffTab').classList.add('hide');$('adminTab').classList.add('hide');if($('authView').classList.contains('hide'))closeAuth();else $('appView').classList.add('hide');
+  profile=null;staffCafes=[];$('userLabel').textContent='Order as guest · no sign-in';$('bpRoleGate').hidden=false;document.body.dataset.role='';$('accountName').textContent='Guest customer';$('accountId').textContent='Enter your name at checkout';$('accountRole').textContent='Guest';$('accountOnline').textContent='● Ready to order';$('accountAction').textContent='No account needed to order';$('bpStaffNav').classList.add('hide');$('bpAdminNav').classList.add('hide');$('authButton').textContent='Staff / Admin';$('staffTab').classList.add('hide');$('adminTab').classList.add('hide');if($('authView').classList.contains('hide'))closeAuth();else $('appView').classList.add('hide');
  }
 }
 async function loadStaffAccess(){
@@ -732,6 +732,7 @@ function enterWorkspace(role){
  document.querySelectorAll('.bp-nav [data-bp-tab]').forEach(b=>b.classList.toggle('active',(role==='staff'&&b.dataset.bpTab==='staff')||(role==='admin'&&b.dataset.bpTab==='admin')||(role==='student'&&b.dataset.bpTab==='order')));
  if(role==='staff'||role==='admin')$('userLabel').textContent=role==='staff'?'Café staff workspace':'Administrator workspace';
 }
+$('bpSwitchWorkspace').addEventListener('click',()=>{$('bpRoleGate').hidden=false;$('bpRoleHeading').classList.add('hide');$('appView').classList.add('hide');});
 document.querySelectorAll('[data-enter-role]').forEach(b=>b.addEventListener('click',()=>{
  const role=b.dataset.enterRole;enterWorkspace(role);
  if(role==='student'){closeAuth();return;}
