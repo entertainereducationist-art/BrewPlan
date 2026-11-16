@@ -307,6 +307,30 @@ body[data-role="staff"] #adminTabPanel,body[data-role="admin"] #staffTabPanel{di
 @media(max-width:760px){.bp-role-gate{padding:14px;align-items:start}.bp-role-card{margin:auto;padding:22px;max-height:none}.bp-role-options{grid-template-columns:1fr;gap:10px}.bp-role-option{min-height:unset;padding:17px;display:grid;grid-template-columns:42px 1fr;grid-template-rows:auto auto auto;column-gap:12px;align-items:center}.bp-role-option .role-emoji{grid-row:1/4;font-size:28px}.bp-role-option strong,.bp-role-option small,.bp-role-option em{grid-column:2}.bp-role-option small{font-size:13px}.bp-role-option em{margin-top:3px}}
 @media(min-width:761px) and (max-width:980px){.bp-role-options{grid-template-columns:repeat(2,minmax(0,1fr))}.bp-role-option:last-child{grid-column:1/-1}}
 
+
+/* Consistent interaction feedback for every clickable BrewPlan control */
+button,[role="button"],a,select{ -webkit-tap-highlight-color:transparent; touch-action:manipulation }
+button:not(:disabled),[role="button"],a{cursor:pointer}
+button:not(:disabled),[role="button"],.cafe,.item,.bp-gallery-tile,.bp-role-option,.theme-choice,.wall-choice{transition:transform .16s ease,box-shadow .18s ease,border-color .18s ease,background-color .18s ease,filter .18s ease}
+button:not(:disabled):active,[role="button"]:active,.cafe:active,.bp-gallery-tile:active,.bp-role-option:active,.theme-choice:active,.wall-choice:active{transform:scale(.975);filter:brightness(.97)}
+button:disabled{cursor:not-allowed;opacity:.55}
+button:focus-visible,[role="button"]:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #d3a044!important;outline-offset:3px!important}
+.bp-click-feedback{animation:bpClickFeedback .28s ease-out}
+@keyframes bpClickFeedback{0%{filter:brightness(1)}45%{filter:brightness(1.12)}100%{filter:brightness(1)}}
+.bp-nav button{min-height:48px;touch-action:manipulation}
+.bp-role-option,.bp-gallery-tile{touch-action:manipulation}
+@media(hover:none){button:not(:disabled):active,.cafe:active,.bp-gallery-tile:active,.bp-role-option:active{box-shadow:0 0 0 2px #d3a04455}}
+@media(max-width:760px){
+ .bp-nav button{min-height:54px;min-width:0;padding:8px 2px}
+ .bp-nav .nav-label{line-height:1.15;white-space:nowrap}
+ .bp-nav .nav-icon{line-height:1.2}
+ .bp-main{padding-bottom:76px}
+ .bp-top-right button,.btn{min-height:42px}
+ .cafes,.menu{grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr))}
+ .field input,.field select,.field textarea{min-height:44px;font-size:16px}
+}
+@media(max-width:390px){.bp-nav .nav-label{font-size:8px}.bp-nav button{padding-inline:1px}.wrap{padding:10px}.bp-hero{padding:22px 17px}.bp-hero h2{font-size:38px}}
+
 </style>
 </head>
 <body>
@@ -745,6 +769,18 @@ document.querySelectorAll('[data-enter-role]').forEach(b=>b.addEventListener('cl
  authMode=role==='admin'?'admin':'signin';renderAuthMode();openAuth();
  $('authSubtitle').textContent=role==='admin'?'Sign in with the creator administrator account. Only verified administrator accounts can enter this workspace.':'Sign in with your café staff account. Your café tools appear only after the administrator assigns your account.';
 }));
+
+
+// Give every interactive option a brief, consistent tap/click acknowledgement.
+// This is feedback only; each control keeps its own existing action and permissions.
+document.addEventListener('click',e=>{
+ const control=e.target.closest('button:not(:disabled),[role="button"],a,select');
+ if(!control)return;
+ control.classList.remove('bp-click-feedback');
+ void control.offsetWidth;
+ control.classList.add('bp-click-feedback');
+ window.setTimeout(()=>control.classList.remove('bp-click-feedback'),300);
+},true);
 
 initAppearance();
 initPhotoStudio();
