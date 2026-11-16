@@ -301,6 +301,12 @@ body[data-role="staff"] #staffTabPanel,body[data-role="admin"] #adminTabPanel{di
 body[data-role="staff"] #adminTabPanel,body[data-role="admin"] #staffTabPanel{display:none!important}
 @media(max-width:650px){.bp-role-options{grid-template-columns:1fr}.bp-role-option{min-height:130px}.bp-role-card{border-radius:21px}}
 
+
+/* Role selector: touch-friendly, keyboard-accessible and creator-only admin entry */
+.bp-role-options{align-items:stretch}.bp-role-option{width:100%;cursor:pointer;pointer-events:auto;position:relative;z-index:2;touch-action:manipulation;font:inherit}.bp-role-option:focus-visible{outline:3px solid #d3a044;outline-offset:3px}.bp-role-option[hidden]{display:none!important}.bp-role-gate{overflow-y:auto;overscroll-behavior:contain}.bp-role-card{max-height:calc(100dvh - 32px);overflow-y:auto}
+@media(max-width:760px){.bp-role-gate{padding:14px;align-items:start}.bp-role-card{margin:auto;padding:22px;max-height:none}.bp-role-options{grid-template-columns:1fr;gap:10px}.bp-role-option{min-height:unset;padding:17px;display:grid;grid-template-columns:42px 1fr;grid-template-rows:auto auto auto;column-gap:12px;align-items:center}.bp-role-option .role-emoji{grid-row:1/4;font-size:28px}.bp-role-option strong,.bp-role-option small,.bp-role-option em{grid-column:2}.bp-role-option small{font-size:13px}.bp-role-option em{margin-top:3px}}
+@media(min-width:761px) and (max-width:980px){.bp-role-options{grid-template-columns:repeat(2,minmax(0,1fr))}.bp-role-option:last-child{grid-column:1/-1}}
+
 </style>
 </head>
 <body>
@@ -308,7 +314,7 @@ body[data-role="staff"] #adminTabPanel,body[data-role="admin"] #staffTabPanel{di
  <div class="bp-role-card"><div class="bp-role-kicker">NUST H-12 · BrewPlan</div><h2 id="bpRoleTitle">Welcome. What brings you here?</h2><p>Choose your workspace to open the right BrewPlan experience. Staff and administrator tools require verified account access.</p><div class="bp-role-options">
  <button class="bp-role-option" type="button" data-enter-role="student"><span class="role-emoji">🎓</span><strong>I'm a Student</strong><small>Explore campus cafés, browse menus, place pickup orders and check your tickets.</small><em>Enter student space →</em></button>
  <button class="bp-role-option" type="button" data-enter-role="staff"><span class="role-emoji">☕</span><strong>Café Staff</strong><small>Manage your café menu, incoming orders, preparation and pickup status.</small><em>Staff sign in →</em></button>
- <button class="bp-role-option" type="button" data-enter-role="admin"><span class="role-emoji">♛</span><strong>Administrator</strong><small>Oversee BrewPlan, accounts, café access, listings and community approvals.</small><em>Administrator sign in →</em></button>
+ <button class="bp-role-option" type="button" data-enter-role="admin" hidden aria-hidden="true"><span class="role-emoji">♛</span><strong>Administrator</strong><small>Oversee BrewPlan, accounts, café access, listings and community approvals.</small><em>Administrator sign in →</em></button>
  </div><div class="bp-role-foot">Choosing a role opens its workspace; it does not grant account permissions.</div></div></div>
 <div class="bp-shell">
 <aside class="bp-sidebar">
@@ -724,7 +730,7 @@ function initAppearance(){
 const creatorChaiButton=$('creatorChaiButton');creatorChaiButton.addEventListener('click',()=>{const contact=$('creatorWhatsapp'),expanded=creatorChaiButton.getAttribute('aria-expanded')==='true';creatorChaiButton.setAttribute('aria-expanded',String(!expanded));contact.hidden=expanded;if(!expanded){creatorChaiButton.classList.remove('is-celebrating');void creatorChaiButton.offsetWidth;creatorChaiButton.classList.add('is-celebrating');contact.classList.remove('bp-chai-reveal');void contact.offsetWidth;contact.classList.add('bp-chai-reveal');window.setTimeout(()=>creatorChaiButton.classList.remove('is-celebrating'),1250);}});
 
 function enterWorkspace(role){
- const gate=$('bpRoleGate');document.body.dataset.role=role;gate.hidden=true;
+ const gate=$('bpRoleGate');if(role==='admin'&&profile?.role!=='admin'){message('authMessage','Administrator access is reserved for the verified BrewPlan creator account.','error');return;}if(role==='staff'&&!staffCafes.length&&user){message('authMessage','Your account has not been assigned to a café yet.','error');return;}document.body.dataset.role=role;gate.hidden=true;
  const heading=$('bpRoleHeading'),title=$('bpRoleHeadingTitle'),desc=$('bpRoleHeadingText');
  if(role==='student'){heading.classList.add('hide');showTab('order');}
  if(role==='staff'){heading.classList.remove('hide');$('bpRoleKicker').textContent='Café operations';title.textContent='Your café, in control.';desc.textContent='A focused workspace for incoming orders, menu updates and pickup coordination.';showTab('staff');}
@@ -759,6 +765,6 @@ let bpInstallPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();bpInstallPrompt=e;$('bpInstallApp').hidden=false;});
 $('bpInstallApp').addEventListener('click',async()=>{if(!bpInstallPrompt){showToast('Use your browser menu and choose Install app or Add to Home Screen.');return;}bpInstallPrompt.prompt();const choice=await bpInstallPrompt.userChoice;showToast(choice.outcome==='accepted'?'BrewPlan is being installed.':'Installation cancelled.');bpInstallPrompt=null;$('bpInstallApp').hidden=true;});
 if('serviceWorker' in navigator && location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}
-bpInitDailyQuote();await loadCafes();await loadRecipes();await refreshSession();if(!user){$('bpRoleGate').hidden=false;$('appView').classList.remove('hide');$('authView').classList.add('hide');}
+bpInitDailyQuote();await loadCafes();await loadRecipes();await refreshSession();if(!user){$('bpRoleGate').hidden=false;$('appView').classList.remove('hide');$('authView').classList.add('hide');const adminChoice=document.querySelector('[data-enter-role="admin"]');if(adminChoice)adminChoice.hidden=true;}
 </script>
 </body></html>
