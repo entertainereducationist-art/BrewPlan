@@ -481,6 +481,14 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <button class="btn ghost" id="founderSetupChoice" style="width:100%;margin-top:8px">First-time founder setup</button></div></section>
 <div id="appView">
 <nav class="tabs"><button class="active" data-tab="order">Order food</button><button data-tab="recipes">Recipes</button><button data-tab="history">My orders</button><button data-tab="staff" id="staffTab" class="hide">Café dashboard</button><button data-tab="admin" id="adminTab" class="hide">Administrator</button></nav>
+
+<section id="bpUtilityScreen" class="hide" aria-live="polite" style="margin:0 0 22px">
+ <div class="panel" style="max-width:900px;margin:0 auto">
+  <div class="between" style="align-items:center"><button type="button" class="btn ghost" id="bpUtilityBack">← Back</button><span class="badge">BrewPlan</span></div>
+  <div id="bpUtilityContent" style="padding:20px 4px 8px"></div>
+ </div>
+</section>
+
 <section id="orderTab">
 <div class="panel"><div class="between"><h3>Choose your café</h3><small id="cafeCount">Loading cafés…</small></div><div id="cafes" class="cafes"></div></div>
 <div class="grid" style="margin-top:17px"><div class="panel"><div class="between"><h3 id="menuTitle">Menu</h3><span id="menuCount" class="muted"></span></div><div class="field"><input id="search" placeholder="Search this café’s menu…"></div><div id="menu" class="menu"><div class="empty">Loading menu…</div></div></div>
@@ -876,11 +884,11 @@ $('resendVerification').addEventListener('click',async()=>{const email=$('authEm
 $('forgotPassword').addEventListener('click',async()=>{const email=$('authEmail').value.trim().toLowerCase();if(!email){message('authMessage','Enter your account email first.','error');return;}$('forgotPassword').disabled=true;const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin});$('forgotPassword').disabled=false;message('authMessage',error?error.message:'If the account exists, a password reset email has been requested.','success');});
 document.querySelectorAll('[data-bp-tab]').forEach(b=>b.addEventListener('click',()=>{const tab=b.dataset.bpTab;showTab(tab);document.querySelectorAll('[data-bp-tab]').forEach(x=>x.classList.toggle('active',x===b));if(tab==='history')loadOrders();if(tab==='recipes')loadRecipes();if(tab==='staff')loadStaffDashboard();if(tab==='admin')loadAdminDashboard();const target=b.dataset.scroll;if(target){const el=target==='top'?document.querySelector('.bp-hero'):target==='cafes'?$('cafes'):target==='menu'?$('menu'):null;if(el)el.scrollIntoView({behavior:'smooth',block:'center'});}}));
 $('bpThemeToggle').addEventListener('click',()=>{$('themeOptions').closest('.appearance').classList.toggle('is-open');$('themeOptions').closest('.appearance').scrollIntoView({behavior:'smooth',block:'center'});});
-document.querySelector('[data-bp-action="settings"]').addEventListener('click',()=>{$('themeOptions').closest('.appearance').classList.toggle('is-open');$('themeOptions').closest('.appearance').scrollIntoView({behavior:'smooth',block:'center'});});
-document.querySelector('[data-bp-action="profile"]').addEventListener('click',()=>{if(user){$('accountName').scrollIntoView({behavior:'smooth',block:'center'});}else{openAuth();}});
-document.querySelector('[data-bp-action="help"]').addEventListener('click',()=>showToast('For BrewPlan account or ordering help, contact your campus café administrator.'));
-document.querySelector('[data-bp-action="premium"]').addEventListener('click',()=>showToast('Premium features are not enabled yet.'));
-$('bpNotificationsButton').addEventListener('click',()=>showToast('No notification'));
+document.querySelectorAll('[data-bp-action]').forEach(b=>b.addEventListener('click',()=>openUtilityScreen(b.dataset.bpAction)));
+
+
+
+
 $('accountAction').addEventListener('click',()=>{if(user?.is_anonymous){showToast('Guest checkout is ready. No account is required.');}else if(user){showToast('You are signed in.');}else{showToast('Enter your student name at checkout. No sign-in required.');}});
 $('topSearch').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();$('search').value=e.target.value;document.querySelectorAll('[data-cafe]').forEach(b=>{b.hidden=!!q&&!b.textContent.toLowerCase().includes(q);});showTab('order');loadMenu();});
 function showToast(t){let n=$('bpToast');if(!n){n=document.createElement('div');n.id='bpToast';n.className='bp-toast';document.body.appendChild(n);}n.textContent=t;n.classList.remove('hide');clearTimeout(window.__bpToastTimer);window.__bpToastTimer=setTimeout(()=>n.classList.add('hide'),3200);}
