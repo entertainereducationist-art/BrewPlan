@@ -344,7 +344,23 @@ function bpInitDailyQuote(){
  const quote=bpDailyQuotes[bpTodayIndex];$('bpDailyQuote').textContent='“'+quote[0]+'”';$('bpDailyQuoteAuthor').textContent='— '+quote[1];
  $('bpVoiceToggle').textContent='🔔 Ticket voice: '+(bpVoiceEnabled?'On':'Off');$('bpVoiceToggle').setAttribute('aria-pressed',String(bpVoiceEnabled));
 }
-$('bpHearQuote').addEventListener('click',()=>bpSpeak(bpDailyQuotes[bpTodayIndex][0]));
+function bpSpeakQuote(){
+ const status=$('bpVoiceStatus');
+ if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window)){status.textContent='Quote voice playback is not supported by this browser.';return;}
+ try{
+  window.speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(bpDailyQuotes[bpTodayIndex][0]);
+  const voices=window.speechSynthesis.getVoices();
+  const englishVoice=voices.find(v=>/^en(-|_)/i.test(v.lang));
+  if(englishVoice)utterance.voice=englishVoice;
+  utterance.lang=englishVoice?.lang||'en-US';utterance.rate=.92;utterance.pitch=1;
+  utterance.onstart=()=>status.textContent='Reading today’s quote…';
+  utterance.onend=()=>status.textContent='Quote finished. Ticket voice notifications remain '+(bpVoiceEnabled?'on.':'off.');
+  utterance.onerror=()=>status.textContent='Could not read the quote. Check your browser audio settings and try again.';
+  window.speechSynthesis.speak(utterance);
+ }catch(e){status.textContent='Quote voice playback is unavailable in this browser.';}
+}
+$('bpHearQuote').addEventListener('click',bpSpeakQuote);
 $('bpVoiceToggle').addEventListener('click',()=>{bpVoiceEnabled=!bpVoiceEnabled;localStorage.setItem('brewplanVoiceTickets',bpVoiceEnabled?'on':'off');bpInitDailyQuote();$('bpVoiceStatus').textContent=bpVoiceEnabled?'Voice ticket announcements enabled.':'Voice ticket announcements disabled.';if(bpVoiceEnabled)bpSpeak('Voice ticket announcements are now on.');else if('speechSynthesis' in window)window.speechSynthesis.cancel();});
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = value => value == null ? 'Price not set' : 'PKR ' + Number(value).toLocaleString('en-PK',{maximumFractionDigits:2});
