@@ -218,6 +218,25 @@ header{background:rgba(5,13,27,.68);backdrop-filter:blur(28px) saturate(150%);bo
 .bp-premium{background:linear-gradient(110deg,#2c2416,#171827);box-shadow:inset 0 0 0 1px #ffcb4b44}
 @media(max-width:1100px){.bp-shell{grid-template-columns:78px minmax(0,1fr)}.bp-sidebar{width:auto}.bp-top-grid{grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr)}.bp-hero{min-height:440px}}
 @media(max-width:760px){.bp-top-grid{display:flex;flex-direction:column}.bp-hero{min-height:390px}.bp-gallery-tile{height:75px}}
+
+/* BrewPlan accessible button contrast system */
+:root{--bp-btn-primary:#f5b52d;--bp-btn-primary-text:#172033;--bp-btn-secondary:#243653;--bp-btn-secondary-text:#ffffff;--bp-btn-soft:#e8eef7;--bp-btn-soft-text:#1c2b43;--bp-btn-danger:#b93838;--bp-btn-danger-text:#ffffff}
+button,.btn{font-weight:750}
+.btn{background:var(--bp-btn-secondary)!important;color:var(--bp-btn-secondary-text)!important;border:1px solid #405675!important;text-shadow:none!important}
+.btn.primary,.btn[ type="submit"],#authView .btn.primary{background:linear-gradient(110deg,#ffdc7c,#f5ad24)!important;color:var(--bp-btn-primary-text)!important;border:1px solid #d18b13!important;box-shadow:0 5px 16px #d18b1333!important}
+.btn.ghost{background:var(--bp-btn-soft)!important;color:var(--bp-btn-soft-text)!important;border:1px solid #aabbd2!important}
+.btn.danger{background:var(--bp-btn-danger)!important;color:var(--bp-btn-danger-text)!important;border:1px solid #922828!important}
+.btn:disabled,button:disabled{background:#e5e7eb!important;color:#596273!important;border:1px solid #c8ced8!important;opacity:1!important;cursor:not-allowed!important;box-shadow:none!important}
+.btn:focus-visible,button:focus-visible{outline:3px solid #1687d9!important;outline-offset:3px}
+.tabs button{background:#e8eef7!important;color:#1c2b43!important;border:1px solid #aabbd2!important;font-weight:750}
+.tabs button.active,.tabs button[aria-selected="true"]{background:linear-gradient(110deg,#ffdc7c,#f5ad24)!important;color:#172033!important;border:1px solid #d18b13!important}
+.bp-nav button{background:transparent!important;color:#eaf0fb!important;border:1px solid transparent!important}
+.bp-nav button.active{background:linear-gradient(110deg,#ffdc7c,#f5ad24)!important;color:#172033!important;border-color:#d18b13!important}
+.bp-theme-toggle,.bp-premium{color:#fff!important}
+.theme-choice,.wall-choice{color:#1c2b43!important}
+.photo-studio .btn{background:#243653!important;color:#fff!important;border:1px solid #536987!important}
+.photo-studio .btn.primary,.bp-photo-viewer .btn.primary{background:linear-gradient(110deg,#ffdc7c,#f5ad24)!important;color:#172033!important;border-color:#d18b13!important}
+
 </style>
 </head>
 <body>
