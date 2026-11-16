@@ -288,9 +288,28 @@ header p,.bp-location,.bp-top-right #userLabel{color:#526078!important}
 @keyframes bpChaiPanel{from{opacity:0;transform:translateY(-7px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.bp-creator-chai.is-celebrating,.bp-creator-chai.is-celebrating .bp-chai-cup,.bp-creator-chai.is-celebrating .bp-chai-steam,.bp-creator-chai.is-celebrating .bp-chai-sparkle,.bp-chai-reveal{animation:none!important}}
 
+
+/* Role-based entry and independent workspaces */
+.bp-role-gate{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:22px;background:linear-gradient(145deg,rgba(6,14,28,.96),rgba(10,24,43,.97));}
+.bp-role-gate[hidden]{display:none!important}.bp-role-card{width:min(880px,100%);padding:clamp(22px,4vw,42px);border:1px solid #ffffff28;border-radius:28px;background:linear-gradient(145deg,#fff,#f4f6fa);color:#17243a;box-shadow:0 30px 100px #0008}.bp-role-kicker{font-size:11px;letter-spacing:2px;font-weight:900;color:#a36a12;text-transform:uppercase}.bp-role-card h2{font-size:clamp(30px,5vw,48px);line-height:1.04;letter-spacing:-1.8px;margin:10px 0}.bp-role-card>p{color:#657187;max-width:580px}.bp-role-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:25px}.bp-role-option{min-height:190px;text-align:left;padding:20px;border:1px solid #e0e5ed;border-radius:19px;background:#fff;color:#17243a;display:flex;flex-direction:column;gap:10px;transition:.2s}.bp-role-option:hover{transform:translateY(-4px);border-color:#d3a044;box-shadow:0 12px 30px #1a2b4518}.bp-role-option .role-emoji{font-size:30px}.bp-role-option strong{font-size:18px}.bp-role-option small{color:#66748a;line-height:1.5}.bp-role-option em{font-style:normal;font-weight:850;color:#98630f;margin-top:auto;font-size:12px}.bp-role-foot{margin-top:20px;color:#8791a2;font-size:12px}
+.bp-role-heading{padding:25px 28px;margin:0 0 18px;border:1px solid #e3e8ef;border-radius:20px;background:#fff;color:#17243a}.bp-role-heading .eyebrow{color:#a36a12}.bp-role-heading h2{margin:5px 0;font-size:30px}.bp-role-heading p{margin:0;color:#657187}
+body[data-role="staff"] .bp-top-grid,body[data-role="staff"] .bp-stats,body[data-role="staff"] .bp-quote-card,body[data-role="staff"] .bp-bottom-grid,body[data-role="staff"] #orderTab,body[data-role="staff"] #recipesTab,body[data-role="staff"] #historyTab,body[data-role="staff"] .bp-footer{display:none!important}
+body[data-role="admin"] .bp-top-grid,body[data-role="admin"] .bp-stats,body[data-role="admin"] .bp-quote-card,body[data-role="admin"] .bp-bottom-grid,body[data-role="admin"] #orderTab,body[data-role="admin"] #recipesTab,body[data-role="admin"] #historyTab,body[data-role="admin"] .bp-footer{display:none!important}
+body[data-role="staff"] .bp-nav [data-bp-tab="order"],body[data-role="staff"] .bp-nav [data-bp-tab="history"],body[data-role="staff"] .bp-nav [data-bp-tab="recipes"],body[data-role="staff"] .bp-nav [data-bp-action="notifications"],body[data-role="staff"] .bp-nav [data-bp-action="profile"],body[data-role="staff"] .bp-nav [data-bp-action="premium"]{display:none!important}
+body[data-role="admin"] .bp-nav [data-bp-tab="order"],body[data-role="admin"] .bp-nav [data-bp-tab="history"],body[data-role="admin"] .bp-nav [data-bp-tab="recipes"],body[data-role="admin"] .bp-nav [data-bp-action="notifications"],body[data-role="admin"] .bp-nav [data-bp-action="profile"],body[data-role="admin"] .bp-nav [data-bp-action="premium"]{display:none!important}
+body[data-role="staff"] #staffTabPanel,body[data-role="admin"] #adminTabPanel{display:block!important}
+body[data-role="staff"] #adminTabPanel,body[data-role="admin"] #staffTabPanel{display:none!important}
+@media(max-width:650px){.bp-role-options{grid-template-columns:1fr}.bp-role-option{min-height:130px}.bp-role-card{border-radius:21px}}
+
 </style>
 </head>
 <body>
+<div class="bp-role-gate" id="bpRoleGate" role="dialog" aria-modal="true" aria-labelledby="bpRoleTitle">
+ <div class="bp-role-card"><div class="bp-role-kicker">NUST H-12 · BrewPlan</div><h2 id="bpRoleTitle">Welcome. What brings you here?</h2><p>Choose your workspace to open the right BrewPlan experience. Staff and administrator tools require verified account access.</p><div class="bp-role-options">
+ <button class="bp-role-option" type="button" data-enter-role="student"><span class="role-emoji">🎓</span><strong>I'm a Student</strong><small>Explore campus cafés, browse menus, place pickup orders and check your tickets.</small><em>Enter student space →</em></button>
+ <button class="bp-role-option" type="button" data-enter-role="staff"><span class="role-emoji">☕</span><strong>Café Staff</strong><small>Manage your café menu, incoming orders, preparation and pickup status.</small><em>Staff sign in →</em></button>
+ <button class="bp-role-option" type="button" data-enter-role="admin"><span class="role-emoji">♛</span><strong>Administrator</strong><small>Oversee BrewPlan, accounts, café access, listings and community approvals.</small><em>Administrator sign in →</em></button>
+ </div><div class="bp-role-foot">Choosing a role opens its workspace; it does not grant account permissions.</div></div></div>
 <div class="bp-shell">
 <aside class="bp-sidebar">
  <div class="bp-brand"><div class="logo" aria-hidden="true">☕</div><div><h1>Brew<span>Plan</span></h1><p>Sip · Order · Enjoy</p></div></div>
@@ -572,7 +591,7 @@ async function refreshSession(){
   const {data:p}=await supabase.from('profiles').select('display_name,role,department,school,registration_number,batch,phone,brewplan_email').eq('id',user.id).maybeSingle();profile=p;
   if((authMode==='admin' && profile?.role!=='admin') || (authMode!=='admin' && profile?.role==='admin')){await supabase.auth.signOut();user=null;profile=null;message('authMessage',authMode==='admin'?'This account does not have administrator permissions.':'This is an administrator account. Please use Administrator sign-in.','error');openAuth();return;}
   $('userLabel').textContent=(profile?.display_name||user.email)+(profile?.brewplan_email?' · '+profile.brewplan_email:'');$('accountName').textContent=profile?.display_name||user.email;$('accountId').textContent=profile?.brewplan_email||user.email;$('accountRole').textContent=profile?.role==='admin'?'Administrator':profile?.role==='student'?'Student':'Account';$('bpAdminNav').classList.toggle('hide',profile?.role!=='admin');$('accountOnline').textContent='● Online';$('accountAction').textContent='View account details →';$('bpStaffNav').classList.toggle('hide',staffCafes.length===0);$('bpAdminNav').classList.toggle('hide',profile?.role!=='admin');
-  $('authButton').textContent='Sign out';closeAuth();await loadOrders();await loadStaffAccess();
+  $('authButton').textContent='Sign out';closeAuth();await loadOrders();await loadStaffAccess();if(profile?.role==='admin'){enterWorkspace('admin');}else if(staffCafes.length){enterWorkspace('staff');}else{enterWorkspace('student');}
  }else{
   profile=null;staffCafes=[];$('userLabel').textContent='Order as guest · no sign-in';$('accountName').textContent='Guest customer';$('accountId').textContent='Enter your name at checkout';$('accountRole').textContent='Guest';$('accountOnline').textContent='● Ready to order';$('accountAction').textContent='No account needed to order';$('bpStaffNav').classList.add('hide');$('bpAdminNav').classList.add('hide');$('authButton').textContent='Staff / Admin';$('staffTab').classList.add('hide');$('adminTab').classList.add('hide');if($('authView').classList.contains('hide'))closeAuth();else $('appView').classList.add('hide');
  }
@@ -703,6 +722,23 @@ function initAppearance(){
 }
 
 const creatorChaiButton=$('creatorChaiButton');creatorChaiButton.addEventListener('click',()=>{const contact=$('creatorWhatsapp'),expanded=creatorChaiButton.getAttribute('aria-expanded')==='true';creatorChaiButton.setAttribute('aria-expanded',String(!expanded));contact.hidden=expanded;if(!expanded){creatorChaiButton.classList.remove('is-celebrating');void creatorChaiButton.offsetWidth;creatorChaiButton.classList.add('is-celebrating');contact.classList.remove('bp-chai-reveal');void contact.offsetWidth;contact.classList.add('bp-chai-reveal');window.setTimeout(()=>creatorChaiButton.classList.remove('is-celebrating'),1250);}});
+
+function enterWorkspace(role){
+ const gate=$('bpRoleGate');document.body.dataset.role=role;gate.hidden=true;
+ const heading=$('bpRoleHeading'),title=$('bpRoleHeadingTitle'),desc=$('bpRoleHeadingText');
+ if(role==='student'){heading.classList.add('hide');showTab('order');}
+ if(role==='staff'){heading.classList.remove('hide');$('bpRoleKicker').textContent='Café operations';title.textContent='Your café, in control.';desc.textContent='A focused workspace for incoming orders, menu updates and pickup coordination.';showTab('staff');}
+ if(role==='admin'){heading.classList.remove('hide');$('bpRoleKicker').textContent='BrewPlan control centre';title.textContent='Welcome back, Hassan.';desc.textContent='Manage the campus marketplace, staff permissions, café visibility and community content.';showTab('admin');}
+ document.querySelectorAll('.bp-nav [data-bp-tab]').forEach(b=>b.classList.toggle('active',(role==='staff'&&b.dataset.bpTab==='staff')||(role==='admin'&&b.dataset.bpTab==='admin')||(role==='student'&&b.dataset.bpTab==='order')));
+ if(role==='staff'||role==='admin')$('userLabel').textContent=role==='staff'?'Café staff workspace':'Administrator workspace';
+}
+document.querySelectorAll('[data-enter-role]').forEach(b=>b.addEventListener('click',()=>{
+ const role=b.dataset.enterRole;enterWorkspace(role);
+ if(role==='student'){closeAuth();return;}
+ authMode=role==='admin'?'admin':'signin';renderAuthMode();openAuth();
+ $('authSubtitle').textContent=role==='admin'?'Sign in with the creator administrator account. Only verified administrator accounts can enter this workspace.':'Sign in with your café staff account. Your café tools appear only after the administrator assigns your account.';
+}));
+
 initAppearance();
 initPhotoStudio();
 renderAuthMode();
@@ -722,6 +758,6 @@ let bpInstallPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();bpInstallPrompt=e;$('bpInstallApp').hidden=false;});
 $('bpInstallApp').addEventListener('click',async()=>{if(!bpInstallPrompt){showToast('Use your browser menu and choose Install app or Add to Home Screen.');return;}bpInstallPrompt.prompt();const choice=await bpInstallPrompt.userChoice;showToast(choice.outcome==='accepted'?'BrewPlan is being installed.':'Installation cancelled.');bpInstallPrompt=null;$('bpInstallApp').hidden=true;});
 if('serviceWorker' in navigator && location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}
-bpInitDailyQuote();await loadCafes();await loadRecipes();await refreshSession();
+bpInitDailyQuote();await loadCafes();await loadRecipes();await refreshSession();if(!user){$('bpRoleGate').hidden=false;$('appView').classList.remove('hide');$('authView').classList.add('hide');}
 </script>
 </body></html>
