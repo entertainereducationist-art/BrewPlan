@@ -422,7 +422,7 @@ const SUPABASE_KEY = 'sb_publishable_H2FWOLPrRLXeW-XYFN7agQ_mkvxMJMc';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = id => document.getElementById(id);
 let user = null, profile = null, cafes = [], selectedCafe = null, cart = {}, staffCafes = [];
-let authMode = 'signin';
+let authMode = 'signin', requestedWorkspace = null;
 const FOUNDER_EMAIL = 'hassanirfan586775@gmail.com';
 const bpDailyQuotes=[
  ['Small steps, taken with heart, make meaningful days.','BrewPlan Daily'],
@@ -621,7 +621,7 @@ async function refreshSession(){
   const {data:p}=await supabase.from('profiles').select('display_name,role,department,school,registration_number,batch,phone,brewplan_email').eq('id',user.id).maybeSingle();profile=p;
   if((authMode==='admin' && profile?.role!=='admin') || (authMode!=='admin' && profile?.role==='admin')){await supabase.auth.signOut();user=null;profile=null;message('authMessage',authMode==='admin'?'This account does not have administrator permissions.':'This is an administrator account. Please use Administrator sign-in.','error');openAuth();return;}
   $('userLabel').textContent=(profile?.display_name||user.email)+(profile?.brewplan_email?' · '+profile.brewplan_email:'');$('accountName').textContent=profile?.display_name||user.email;$('accountId').textContent=profile?.brewplan_email||user.email;$('accountRole').textContent=profile?.role==='admin'?'Administrator':profile?.role==='student'?'Student':'Account';$('bpAdminNav').classList.toggle('hide',profile?.role!=='admin');$('accountOnline').textContent='● Online';$('accountAction').textContent='View account details →';$('bpStaffNav').classList.toggle('hide',staffCafes.length===0);$('bpAdminNav').classList.toggle('hide',profile?.role!=='admin');
-  $('authButton').textContent='Sign out';closeAuth();await loadOrders();await loadStaffAccess();if(profile?.role==='admin'){enterWorkspace('admin');}else if(staffCafes.length){enterWorkspace('staff');}else{enterWorkspace('student');}
+  $('authButton').textContent='Sign out';await loadOrders();await loadStaffAccess();if(requestedWorkspace==='staff'&&!staffCafes.length){$('authView').classList.remove('hide');$('appView').classList.add('hide');$('bpRoleGate').hidden=true;message('authMessage','Your account is signed in, but no café has been assigned yet. Please ask the BrewPlan administrator to assign your staff access.','error');return;}if(profile?.role==='admin'){requestedWorkspace=null;closeAuth();enterWorkspace('admin');}else if(staffCafes.length){requestedWorkspace=null;closeAuth();enterWorkspace('staff');}else{requestedWorkspace=null;closeAuth();enterWorkspace('student');}
  }else{
   profile=null;staffCafes=[];$('userLabel').textContent='Order as guest · no sign-in';$('bpRoleGate').hidden=false;document.body.dataset.role='';$('accountName').textContent='Guest customer';$('accountId').textContent='Enter your name at checkout';$('accountRole').textContent='Guest';$('accountOnline').textContent='● Ready to order';$('accountAction').textContent='No account needed to order';$('bpStaffNav').classList.add('hide');$('bpAdminNav').classList.add('hide');$('authButton').textContent='Staff / Admin';$('staffTab').classList.add('hide');$('adminTab').classList.add('hide');if($('authView').classList.contains('hide'))closeAuth();else $('appView').classList.add('hide');
  }
@@ -763,13 +763,20 @@ function enterWorkspace(role){
  if(role==='staff'||role==='admin')$('userLabel').textContent=role==='staff'?'Café staff workspace':'Administrator workspace';
 }
 $('bpSwitchWorkspace').addEventListener('click',()=>{$('bpRoleGate').hidden=false;$('bpRoleHeading').classList.add('hide');$('appView').classList.add('hide');});
-document.querySelectorAll('[data-enter-role]').forEach(b=>b.addEventListener('click',()=>{
- const role=b.dataset.enterRole;enterWorkspace(role);
- if(role==='student'){closeAuth();return;}
- authMode=role==='admin'?'admin':'signin';renderAuthMode();openAuth();
- $('authSubtitle').textContent=role==='admin'?'Sign in with the creator administrator account. Only verified administrator accounts can enter this workspace.':'Sign in with your café staff account. Your café tools appear only after the administrator assigns your account.';
+document.querySelectorAll('[data-enter-role]').forEach(b=>b.addEventListener('click',async()=>{
+ const role=b.dataset.enterRole;
+ if(role==='student'){requestedWorkspace=null;enterWorkspace('student');closeAuth();return;}
+ if(role==='staff'){
+  requestedWorkspace='staff';$('bpRoleGate').hidden=true;
+  if(user){await loadStaffAccess();if(staffCafes.length){requestedWorkspace=null;enterWorkspace('staff');closeAuth();return;}}
+  authMode='signin';renderAuthMode();openAuth();
+  $('authTitle').textContent='Café staff sign-in';
+  $('authSubtitle').textContent='Sign in with your café staff account. After verification, your assigned café dashboard will open automatically. New staff accounts require administrator approval.';
+  $('authCreateStaffAccount').classList.remove('hide');return;
+ }
+ authMode='admin';renderAuthMode();openAuth();
+ $('authSubtitle').textContent='Sign in with the creator administrator account. Only verified administrator accounts can enter this workspace.';
 }));
-
 
 // Give every interactive option a brief, consistent tap/click acknowledgement.
 // This is feedback only; each control keeps its own existing action and permissions.
